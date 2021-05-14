@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
@@ -34,6 +36,11 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 			_indexOf = new IndexOfAlgorithms();
 		}
 		
+		[ParamsSource(nameof(LevelOfParallelismSource))]
+		public int LevelOfParallelism { get; set; }
+
+		public IEnumerable<int> LevelOfParallelismSource => Enumerable.Range(1, Environment.ProcessorCount);
+
 		[Benchmark]
 		public void IndexOfGreaterThan()
 		{
