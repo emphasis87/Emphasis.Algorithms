@@ -7,9 +7,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7E494C55
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emphasis.Algorithms.Tests", "Emphasis.Algorithms.Tests\Emphasis.Algorithms.Tests.csproj", "{ECD06FFF-B7CB-46E1-85B6-FAD8435215DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emphasis.Algorithms.IndexOf", "Emphasis.Algorithms.IndexOf\Emphasis.Algorithms.IndexOf.csproj", "{314837D0-CE3D-4757-8ED7-7A91D13C6FDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emphasis.Algorithms.IndexOf", "Emphasis.Algorithms.IndexOf\Emphasis.Algorithms.IndexOf.csproj", "{314837D0-CE3D-4757-8ED7-7A91D13C6FDF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emphasis.Algorithms.Tests.Benchmarks", "Emphasis.Algorithms.Tests.Benchmarks\Emphasis.Algorithms.Tests.Benchmarks.csproj", "{3912225D-F219-409C-8452-698ACB617024}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emphasis.Algorithms.IndexOf.OpenCL", "Emphasis.Algorithms.IndexOf.OpenCL\Emphasis.Algorithms.IndexOf.OpenCL.csproj", "{186DEC16-5FDC-418C-B9BA-D0887563825E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +31,10 @@ Global
 		{3912225D-F219-409C-8452-698ACB617024}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3912225D-F219-409C-8452-698ACB617024}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3912225D-F219-409C-8452-698ACB617024}.Release|Any CPU.Build.0 = Release|Any CPU
+		{186DEC16-5FDC-418C-B9BA-D0887563825E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{186DEC16-5FDC-418C-B9BA-D0887563825E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{186DEC16-5FDC-418C-B9BA-D0887563825E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{186DEC16-5FDC-418C-B9BA-D0887563825E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
