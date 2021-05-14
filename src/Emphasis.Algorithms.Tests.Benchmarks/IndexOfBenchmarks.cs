@@ -24,8 +24,11 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 		{
 			_height = 1200;
 			_width = 1920;
-			_source = new int[_width * _height];
+			var size = _height * _width;
+			_source = new int[size];
 			_indexes = new int[_source.Length * 2];
+			_height = 1;
+			_width = size / _height;
 
 			var random = new Random();
 			for (var x = 0; x < _source.Length; x++)
@@ -44,7 +47,7 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 		[Benchmark]
 		public async Task IndexOfGreaterThan()
 		{
-			await _indexOf.ParallelIndexOfGreaterThan(_source, _width, _height, _indexes, 0, LevelOfParallelism);
+			await _indexOf.IndexOfGreaterThan(_source, _width, _height, _indexes, 0, LevelOfParallelism);
 		}
 	}
 }
