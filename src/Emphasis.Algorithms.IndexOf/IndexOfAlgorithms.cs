@@ -72,7 +72,7 @@ namespace Emphasis.Algorithms.IndexOf
 					Interlocked.Add(ref count0, count);
 				}
 			}
-
+			
 			void VerticalIndexOf()
 			{
 				unsafe
@@ -100,7 +100,8 @@ namespace Emphasis.Algorithms.IndexOf
 				}
 			}
 
-			Action indexOf = height < levelOfParallelism ? LinearIndexOf : VerticalIndexOf;
+			//Action indexOf = height < levelOfParallelism ? LinearIndexOf : VerticalIndexOf;
+			Action indexOf = VerticalIndexOf;
 
 			var tasks = new List<Task>();
 			for (var l = 0; l < levelOfParallelism - 1; l++)
