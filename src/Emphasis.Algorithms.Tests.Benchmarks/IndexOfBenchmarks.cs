@@ -27,8 +27,6 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 			var size = _height * _width;
 			_source = new int[size];
 			_indexes = new int[_source.Length * 2];
-			//_height = 1;
-			//_width = size / _height;
 
 			var random = new Random();
 			for (var x = 0; x < _source.Length; x++)

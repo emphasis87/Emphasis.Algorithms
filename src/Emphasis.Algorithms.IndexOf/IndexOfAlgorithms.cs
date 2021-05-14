@@ -28,7 +28,6 @@ namespace Emphasis.Algorithms.IndexOf
 			using var dstDisposable = Disposable.Create(() => dstHandle.Free());
 
 			var count0 = 0;
-			var y0 = -1;
 			var d0 = -2;
 			
 			var pStep = size / (levelOfParallelism * 8);
@@ -73,35 +72,7 @@ namespace Emphasis.Algorithms.IndexOf
 				}
 			}
 			
-			void VerticalIndexOf()
-			{
-				unsafe
-				{
-					var count = 0;
-					var src = (int*) srcHandle.AddrOfPinnedObject();
-					var dst = (int*) dstHandle.AddrOfPinnedObject();
-					
-					for (var y = Interlocked.Increment(ref y0); y < height; y = Interlocked.Increment(ref y0))
-					{
-						var s0 = src + y * width;
-						for (var x = 0; x < width; x++)
-						{
-							if (*(s0 + x) > comparand)
-							{
-								var di = Interlocked.Add(ref d0, 2);
-								*(dst + di) = x;
-								*(dst + (di + 1)) = y;
-								count++;
-							}
-						}
-					}
-
-					Interlocked.Add(ref count0, count);
-				}
-			}
-
-			//Action indexOf = height < levelOfParallelism ? LinearIndexOf : VerticalIndexOf;
-			Action indexOf = VerticalIndexOf;
+			Action indexOf = LinearIndexOf;
 
 			var tasks = new List<Task>();
 			for (var l = 0; l < levelOfParallelism - 1; l++)
