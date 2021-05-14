@@ -42,9 +42,9 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 		public IEnumerable<int> LevelOfParallelismSource => Enumerable.Range(1, Environment.ProcessorCount);
 
 		[Benchmark]
-		public void IndexOfGreaterThan()
+		public async Task IndexOfGreaterThan()
 		{
-			_indexOf.IndexOfGreaterThan(_source, _width, _height, _indexes, 0);
+			await _indexOf.ParallelIndexOfGreaterThan(_source, _width, _height, _indexes, 0, LevelOfParallelism);
 		}
 	}
 }
