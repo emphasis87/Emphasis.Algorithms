@@ -26,10 +26,8 @@ namespace Emphasis.Algorithms.IndexOf
 			
 			var dstHandle = GCHandle.Alloc(indexes, GCHandleType.Pinned);
 			using var dstDisposable = Disposable.Create(() => dstHandle.Free());
-
-			var count0 = 0;
-			var d0 = -2;
 			
+			var d0 = -2;
 			var pStep = size / (levelOfParallelism * 8);
 			var p0 = -pStep;
 
@@ -37,7 +35,6 @@ namespace Emphasis.Algorithms.IndexOf
 			{
 				unsafe
 				{
-					var count = 0;
 					var src = (int*)srcHandle.AddrOfPinnedObject();
 					var dst = (int*)dstHandle.AddrOfPinnedObject();
 
@@ -57,7 +54,6 @@ namespace Emphasis.Algorithms.IndexOf
 									var di = Interlocked.Add(ref d0, 2);
 									*(dst + di) = x;
 									*(dst + (di + 1)) = y;
-									count++;
 								}
 							}
 							if (p >= pm)
@@ -67,8 +63,6 @@ namespace Emphasis.Algorithms.IndexOf
 						if (pm >= size)
 							break;
 					}
-
-					Interlocked.Add(ref count0, count);
 				}
 			}
 			
@@ -85,7 +79,7 @@ namespace Emphasis.Algorithms.IndexOf
 
 			await Task.WhenAll(tasks);
 
-			return count0;
+			return Math.Max(0, d0 / 2);
 		}
 	}
 }
