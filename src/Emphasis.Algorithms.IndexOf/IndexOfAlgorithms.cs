@@ -112,7 +112,7 @@ namespace Emphasis.Algorithms.IndexOf
 
 			await Task.WhenAll(tasks);
 
-			return Math.Max(0, d0 / 2);
+			return Math.Max(0, (d0 + 2) / 2);
 		}
 	}
 }
