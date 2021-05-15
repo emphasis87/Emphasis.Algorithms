@@ -50,7 +50,7 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 		[Benchmark]
 		public async Task IndexOfGreaterThan()
 		{
-			await _indexOf.IndexOfGreaterThan(_source, _width, _height, _indexes, 99 - Saturation, LevelOfParallelism);
+			await _indexOf.ParallelIndexOfGreaterThan(_source, _width, _height, _indexes, 99 - Saturation, LevelOfParallelism);
 		}
 	}
 }
