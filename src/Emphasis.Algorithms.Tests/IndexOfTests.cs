@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Emphasis.Algorithms.IndexOf;
 using FluentAssertions;
@@ -71,6 +70,35 @@ namespace Emphasis.Algorithms.Tests
 			{
 				results.Should().Contain((1, y));
 				results.Should().Contain((9, y));
+			}
+		}
+
+		[TestCaseSource(nameof(LevelOfParallelismSource))]
+		public async Task Should_find_parallel_indexOf_greaterThan_full_saturation(int levelOfParallelism)
+		{
+			var source = new int[_width * _height];
+			for (var y = 0; y < _height; y++)
+			{
+				for (var x = 0; x < _width; x++)
+				{
+					source[y * _width + x] = 1;
+				}
+			}
+			var result = new int[source.Length * 2];
+			var count = await _indexOf.ParallelIndexOfGreaterThan(source, _width, _height, result, comparand: 0, levelOfParallelism);
+
+			count.Should().Be(_width * _height);
+			var results = new HashSet<(int, int)>();
+			for (var i = 0; i < count * 2; i += 2)
+			{
+				results.Add((result[i], result[i + 1]));
+			}
+			for (var y = 0; y < _height; y++)
+			{
+				for (var x = 0; x < _height; x++)
+				{
+					results.Should().Contain((x, y));
+				}
 			}
 		}
 	}
