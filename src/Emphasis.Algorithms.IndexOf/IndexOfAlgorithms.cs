@@ -9,7 +9,37 @@ namespace Emphasis.Algorithms.IndexOf
 {
 	public class IndexOfAlgorithms
 	{
-		public async Task<int> IndexOfGreaterThan(int[] source, int width, int height, int[] indexes, int comparand, int levelOfParallelism = 0)
+		public int IndexOfGreaterThan(int[] source, int width, int height, int[] indexes, int comparand)
+		{
+			var srcHandle = GCHandle.Alloc(source, GCHandleType.Pinned);
+			using var srcDisposable = Disposable.Create(() => srcHandle.Free());
+
+			var dstHandle = GCHandle.Alloc(indexes, GCHandleType.Pinned);
+			using var dstDisposable = Disposable.Create(() => dstHandle.Free());
+
+			unsafe
+			{
+				var src = (int*) srcHandle.AddrOfPinnedObject();
+				var dst = (int*) dstHandle.AddrOfPinnedObject();
+				var count = 0;
+				for (var y = 0; y < height; y++)
+				{
+					for (var x = 0; x < width; x++, src++)
+					{
+						if (*src > comparand)
+						{
+							*dst++ = x;
+							*dst++ = y;
+							count++;
+						}
+					}
+				}
+
+				return count;
+			}
+		}
+
+		public async Task<int> ParallelIndexOfGreaterThan(int[] source, int width, int height, int[] indexes, int comparand, int levelOfParallelism = 0)
 		{
 			if (width * height > source.Length)
 				throw new ArgumentOutOfRangeException(nameof(width), $"The {nameof(width)} and {nameof(height)} are out of range of {nameof(source)}.");
@@ -20,6 +50,9 @@ namespace Emphasis.Algorithms.IndexOf
 			var size = width * height;
 			var minSize = 2048;
 			levelOfParallelism = Math.Max(1, Math.Min(levelOfParallelism, size / minSize));
+
+			if (levelOfParallelism == 1)
+				return IndexOfGreaterThan(source, width, height, indexes, comparand);
 			
 			var srcHandle = GCHandle.Alloc(source, GCHandleType.Pinned);
 			using var srcDisposable = Disposable.Create(() => srcHandle.Free());

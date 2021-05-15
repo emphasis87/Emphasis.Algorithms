@@ -28,14 +28,19 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 			_source = new int[size];
 			_indexes = new int[_source.Length * 2];
 
-			var random = new Random();
+			var random = new Random(1);
 			for (var x = 0; x < _source.Length; x++)
 			{
-				_source[x] = random.Next(0, 1);
+				_source[x] = random.Next(0, 99);
 			}
 
 			_indexOf = new IndexOfAlgorithms();
 		}
+
+		[ParamsSource(nameof(SaturationSource))]
+		public int Saturation { get; set; }
+
+		public IEnumerable<int> SaturationSource => Enumerable.Range(1, 5).Select(x => x * 10);
 		
 		[ParamsSource(nameof(LevelOfParallelismSource))]
 		public int LevelOfParallelism { get; set; }
@@ -45,7 +50,7 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 		[Benchmark]
 		public async Task IndexOfGreaterThan()
 		{
-			await _indexOf.IndexOfGreaterThan(_source, _width, _height, _indexes, 0, LevelOfParallelism);
+			await _indexOf.IndexOfGreaterThan(_source, _width, _height, _indexes, 99 - Saturation, LevelOfParallelism);
 		}
 	}
 }
