@@ -17,6 +17,7 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 		private int[] _indexes;
 		private int _width;
 		private int _height;
+		private int _size;
 		private IndexOfAlgorithms _indexOf;
 
 		[GlobalSetup]
@@ -24,8 +25,8 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 		{
 			_height = 1200;
 			_width = 1920;
-			var size = _height * _width;
-			_source = new int[size];
+			_size = _height * _width;
+			_source = new int[_size];
 			_indexes = new int[_source.Length * 2];
 
 			var random = new Random(1);
@@ -41,9 +42,9 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 		public int Saturation { get; set; }
 
 		public IEnumerable<int> SaturationSource => Enumerable.Range(1, 5).Select(x => x * 10);
-		
-		[ParamsSource(nameof(LevelOfParallelismSource))]
-		public int LevelOfParallelism { get; set; }
+
+		//[ParamsSource(nameof(LevelOfParallelismSource))]
+		public int LevelOfParallelism { get; set; } = 1;
 
 		public IEnumerable<int> LevelOfParallelismSource => Enumerable.Range(1, Environment.ProcessorCount);
 

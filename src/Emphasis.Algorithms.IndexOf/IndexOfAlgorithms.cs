@@ -9,19 +9,14 @@ namespace Emphasis.Algorithms.IndexOf
 {
 	public class IndexOfAlgorithms
 	{
-		public int IndexOfGreaterThan(int[] source, int width, int height, int[] indexes, int comparand)
+		public unsafe int IndexOfGreaterThan(int[] source, int width, int height, int[] indexes, int comparand)
 		{
-			var srcHandle = GCHandle.Alloc(source, GCHandleType.Pinned);
-			using var srcDisposable = Disposable.Create(() => srcHandle.Free());
-
-			var dstHandle = GCHandle.Alloc(indexes, GCHandleType.Pinned);
-			using var dstDisposable = Disposable.Create(() => dstHandle.Free());
-
-			unsafe
+			var count = 0;
+			fixed (int* srcPtr = &source[0])
+			fixed (int* dstPtr = &indexes[0])
 			{
-				var src = (int*) srcHandle.AddrOfPinnedObject();
-				var dst = (int*) dstHandle.AddrOfPinnedObject();
-				var count = 0;
+				var src = srcPtr;
+				var dst = dstPtr;
 				for (var y = 0; y < height; y++)
 				{
 					for (var x = 0; x < width; x++, src++)
@@ -34,9 +29,9 @@ namespace Emphasis.Algorithms.IndexOf
 						}
 					}
 				}
-
-				return count;
 			}
+
+			return count;
 		}
 
 		public async Task<int> ParallelIndexOfGreaterThan(int[] source, int width, int height, int[] indexes, int comparand, int levelOfParallelism = 0)
