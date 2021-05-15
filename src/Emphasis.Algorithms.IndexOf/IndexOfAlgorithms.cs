@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reactive.Disposables;
-using System.Runtime.InteropServices;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -34,11 +33,60 @@ namespace Emphasis.Algorithms.IndexOf
 			return count;
 		}
 
+		private unsafe int LinearIndexOf(int[] source, int width, int height, int[] destination, ref int d, int comparand, int step, ref int i)
+		{
+			var count = 0;
+			var size = width * height;
+
+			fixed (int* srcPtr = &source[0])
+			fixed (int* dstPtr = &destination[0])
+			{
+				int pm;
+				do
+				{
+					pm = Interlocked.Add(ref i, step);
+					var pi = pm - step;
+					if (pm > size)
+					{
+						if (pm >= size + step)
+							break;
+
+						pm = size;
+					}
+					var y = pi / width;
+					var x = pi - y * width;
+					var src = srcPtr + pi;
+					for (; y < height; y++)
+					{
+						for (; x < width && pi < pm; x++, pi++, src++)
+						{
+							if (*src > comparand)
+							{
+								var dst = dstPtr + Interlocked.Add(ref d, 2);
+								*dst++ = x;
+								*dst = y;
+								count++;
+							}
+						}
+
+						if (pi >= pm)
+							break;
+
+						x = 0;
+					}
+				} while (pm != size);
+
+			}
+
+			return count;
+		}
+
+
 		public async Task<int> ParallelIndexOfGreaterThan(int[] source, int width, int height, int[] indexes, int comparand, int levelOfParallelism = 0)
 		{
 			if (width * height > source.Length)
 				throw new ArgumentOutOfRangeException(nameof(width), $"The {nameof(width)} and {nameof(height)} are out of range of {nameof(source)}.");
-			
+
 			if (levelOfParallelism == 0)
 				levelOfParallelism = Environment.ProcessorCount;
 
@@ -48,66 +96,22 @@ namespace Emphasis.Algorithms.IndexOf
 
 			if (levelOfParallelism == 1)
 				return IndexOfGreaterThan(source, width, height, indexes, comparand);
-			
-			var srcHandle = GCHandle.Alloc(source, GCHandleType.Pinned);
-			using var srcDisposable = Disposable.Create(() => srcHandle.Free());
-			
-			var dstHandle = GCHandle.Alloc(indexes, GCHandleType.Pinned);
-			using var dstDisposable = Disposable.Create(() => dstHandle.Free());
-			
-			var d0 = -2;
-			var pStep = size / (levelOfParallelism * 8);
-			var p0 = -pStep;
 
-			void LinearIndexOf()
+			var d = -2;
+			var step = size / levelOfParallelism;
+			var i = 0;
+			
+			var tasks = new List<Task<int>>();
+			for (var l = 0; l < levelOfParallelism; l++)
 			{
-				unsafe
-				{
-					var src = (int*)srcHandle.AddrOfPinnedObject();
-					var dst = (int*)dstHandle.AddrOfPinnedObject();
-
-					while (true)
-					{
-						var p = Interlocked.Add(ref p0, pStep);
-						var pm = Math.Min(size, p + pStep);
-						var y = p / width;
-						var x = p - y * width;
-						var s = src + y * width + x;
-						for (; y < height; y++)
-						{
-							for (; x < width && p < pm; x++, p++, s++)
-							{
-								if (*s > comparand)
-								{
-									var di = Interlocked.Add(ref d0, 2);
-									*(dst + di) = x;
-									*(dst + (di + 1)) = y;
-								}
-							}
-							if (p >= pm)
-								break;
-							x = 0;
-						}
-						if (pm >= size)
-							break;
-					}
-				}
-			}
-			
-			Action indexOf = LinearIndexOf;
-
-			var tasks = new List<Task>();
-			for (var l = 0; l < levelOfParallelism - 1; l++)
-			{
-				var t = Task.Run(indexOf);
+				var t = Task.Run(() => LinearIndexOf(source, width, height, indexes, ref d, comparand, step, ref i));
 				tasks.Add(t);
 			}
+			
+			var counts = await Task.WhenAll(tasks);
+			var count = counts.Sum();
 
-			indexOf();
-
-			await Task.WhenAll(tasks);
-
-			return Math.Max(0, (d0 + 2) / 2);
+			return count;
 		}
 	}
 }
