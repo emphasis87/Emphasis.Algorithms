@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using Emphasis.Algorithms.IndexOf;
-using FluentAssertions;
 
 namespace Emphasis.Algorithms.Tests.Benchmarks
 {
 	[MarkdownExporter]
-	[SimpleJob]
+	[ShortRunJob]
 	[Orderer(SummaryOrderPolicy.Method, MethodOrderPolicy.Alphabetical)]
 	public class IndexOfBenchmarks
 	{
@@ -40,7 +38,7 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 			_indexOf = new IndexOfAlgorithms();
 		}
 
-		//[ParamsSource(nameof(SaturationSource))]
+		[ParamsSource(nameof(SaturationSource))]
 		public int Saturation { get; set; } = 10;
 
 		public IEnumerable<int> SaturationSource => Enumerable.Range(1, 5).Select(x => x * 10);
@@ -50,7 +48,7 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 
 		public IEnumerable<int> LevelOfParallelismSource => Enumerable.Range(1, Environment.ProcessorCount);
 
-		public int _result;
+		private int _result;
 
 		[Benchmark]
 		public async Task IndexOfGreaterThan()

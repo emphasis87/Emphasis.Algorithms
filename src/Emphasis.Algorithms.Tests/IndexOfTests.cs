@@ -39,7 +39,7 @@ namespace Emphasis.Algorithms.Tests
 		{
 			var source = new int[] {0, 0, 1, 0, 1, 0};
 			var result = new int[source.Length * 2];
-			var count = _indexOf.IndexOfGreaterThan(source, 3, 2, result, comparand: 0);
+			var count = _indexOf.IndexOfGreaterThan(3, 2, source, result, comparand: 0);
 
 			count.Should().Be(2);
 			(result[0], result[1]).Should().Be((2, 0));
