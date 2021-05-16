@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using Emphasis.Algorithms.IndexOf;
+using FluentAssertions;
 
 namespace Emphasis.Algorithms.Tests.Benchmarks
 {
@@ -38,20 +40,22 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 			_indexOf = new IndexOfAlgorithms();
 		}
 
-		[ParamsSource(nameof(SaturationSource))]
-		public int Saturation { get; set; }
+		//[ParamsSource(nameof(SaturationSource))]
+		public int Saturation { get; set; } = 10;
 
 		public IEnumerable<int> SaturationSource => Enumerable.Range(1, 5).Select(x => x * 10);
 
-		//[ParamsSource(nameof(LevelOfParallelismSource))]
-		public int LevelOfParallelism { get; set; } = 1;
+		[ParamsSource(nameof(LevelOfParallelismSource))]
+		public int LevelOfParallelism { get; set; }
 
 		public IEnumerable<int> LevelOfParallelismSource => Enumerable.Range(1, Environment.ProcessorCount);
+
+		public int _result;
 
 		[Benchmark]
 		public async Task IndexOfGreaterThan()
 		{
-			await _indexOf.ParallelIndexOfGreaterThan(_source, _width, _height, _indexes, 99 - Saturation, LevelOfParallelism);
+			_result = await _indexOf.ParallelIndexOfGreaterThan(_source, _width, _height, _indexes, 99 - Saturation, LevelOfParallelism);
 		}
 	}
 }
