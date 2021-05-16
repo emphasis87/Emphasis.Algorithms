@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,38 +34,47 @@ namespace Emphasis.Algorithms.IndexOf
 			return count;
 		}
 
-		private unsafe int IndexOfGreaterThan(int width, int height, int[] source, int[] indexes, int comparand, ref int position, int start, int length)
+		private unsafe int BufferedIndexOfGreaterThan(int width, int height, int[] source, int[] indexes, int comparand, int start, int length, ref int position)
 		{
 			var count = 0;
-			var src = source.AsSpan(start, length);
 			var y = start / width;
 			var x = start - y * width;
 			var i = 0;
-
-			const int tmpSize = 4096;
+			
+			var tmpSize = Environment.SystemPageSize;
 			Span<int> tmp = stackalloc int[tmpSize];
 			var ti = 0;
 
-			for (; y < height; y++)
+			fixed (int* srcPtr = &source[0])
+			fixed (int* dstPtr = &indexes[0])
+			fixed (int* tmpPtr = &tmp.GetPinnableReference())
 			{
-				for (; x < width && i < length; x++, i++)
+				var src = srcPtr + start;
+				var t = tmpPtr;
+				for (; y < height; y++)
 				{
-					if (src[i] > comparand)
+					for (; x < width && i < length; x++, i++, src++)
 					{
-						tmp[ti++] = x;
-						tmp[ti++] = y;
-						if (ti >= tmpSize)
+						if (*src > comparand)
 						{
-							var dm = Interlocked.Add(ref position, tmpSize);
-							var di = dm - tmpSize;
-							tmp.CopyTo(indexes.AsSpan(di));
-							ti = 0;
-						}
-						count++;
-					}
-				}
+							*t++ = x;
+							*t++ = y;
+							ti += 2;
+							if (ti >= tmpSize)
+							{
+								var dm = Interlocked.Add(ref position, tmpSize);
+								var di = dm - tmpSize;
+								Unsafe.CopyBlock(dstPtr + di, tmpPtr, (uint) (tmpSize * Unsafe.SizeOf<int>()));
+								t = tmpPtr;
+								ti = 0;
+							}
 
-				x = 0;
+							count++;
+						}
+					}
+
+					x = 0;
+				}
 			}
 
 			if (ti > 0)
@@ -84,7 +94,7 @@ namespace Emphasis.Algorithms.IndexOf
 				throw new ArgumentOutOfRangeException(nameof(width), $"The {nameof(width)} and {nameof(height)} are out of range of {nameof(source)}.");
 
 			if (levelOfParallelism == 0)
-				levelOfParallelism = Environment.ProcessorCount;
+				levelOfParallelism = Environment.ProcessorCount / 2;
 			
 			var size = width * height;
 
@@ -95,11 +105,11 @@ namespace Emphasis.Algorithms.IndexOf
 			{
 				var start = l * step;
 				var length = step;
-				tasks.Add(Task.Run(() => IndexOfGreaterThan(width, height, source, indexes, comparand, ref position, start, length)));
+				tasks.Add(Task.Run(() => BufferedIndexOfGreaterThan(width, height, source, indexes, comparand, start, length, ref position)));
 			}
 
 			var start0 = (levelOfParallelism - 1) * step;
-			var count0 = IndexOfGreaterThan(width, height, source, indexes, comparand, ref position, start0, size - start0);
+			var count0 = BufferedIndexOfGreaterThan(width, height, source, indexes, comparand, start0, size - start0, ref position);
 			var counts = await Task.WhenAll(tasks);
 			var count = counts.Sum() + count0;
 

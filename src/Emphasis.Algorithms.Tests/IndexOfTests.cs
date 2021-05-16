@@ -14,6 +14,7 @@ namespace Emphasis.Algorithms.Tests
 		private int[] _indexes;
 		private int _width;
 		private int _height;
+		private int _size;
 		private IndexOfAlgorithms _indexOf;
 
 		[OneTimeSetUp]
@@ -21,14 +22,13 @@ namespace Emphasis.Algorithms.Tests
 		{
 			_height = 1200;
 			_width = 1920;
-			var size = _height * _width;
-			_source = new int[size];
+			_size = _height * _width;
+			_source = new int[_size];
 			_indexes = new int[_source.Length * 2];
-
-			var random = new Random(1);
+			
 			for (var x = 0; x < _source.Length; x++)
 			{
-				_source[x] = random.Next(0, 99);
+				_source[x] = 1;
 			}
 
 			_indexOf = new IndexOfAlgorithms();
@@ -76,16 +76,8 @@ namespace Emphasis.Algorithms.Tests
 		[TestCaseSource(nameof(LevelOfParallelismSource))]
 		public async Task Should_find_parallel_indexOf_greaterThan_full_saturation(int levelOfParallelism)
 		{
-			var source = new int[_width * _height];
-			for (var y = 0; y < _height; y++)
-			{
-				for (var x = 0; x < _width; x++)
-				{
-					source[y * _width + x] = 1;
-				}
-			}
-			var result = new int[source.Length * 2];
-			var count = await _indexOf.ParallelIndexOfGreaterThan(source, _width, _height, result, comparand: 0, levelOfParallelism);
+			var result = new int[_source.Length * 2];
+			var count = await _indexOf.ParallelIndexOfGreaterThan(_source, _width, _height, result, comparand: 0, levelOfParallelism);
 
 			count.Should().Be(_width * _height);
 			var results = new HashSet<(int, int)>();
