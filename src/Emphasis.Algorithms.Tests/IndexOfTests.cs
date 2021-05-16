@@ -58,7 +58,7 @@ namespace Emphasis.Algorithms.Tests
 				source[y * _width + 9] = 1;
 			}
 			var result = new int[source.Length * 2];
-			var count = await _indexOf.ParallelIndexOfGreaterThan(source, _width, _height, result, comparand: 0, levelOfParallelism);
+			var count = await _indexOf.ParallelIndexOfGreaterThan(_width, _height, source, result, comparand: 0, levelOfParallelism: levelOfParallelism);
 
 			count.Should().Be(2 * _height);
 			var results = new HashSet<(int, int)>();
@@ -77,7 +77,7 @@ namespace Emphasis.Algorithms.Tests
 		public async Task Should_find_parallel_indexOf_greaterThan_full_saturation(int levelOfParallelism)
 		{
 			var result = new int[_source.Length * 2];
-			var count = await _indexOf.ParallelIndexOfGreaterThan(_source, _width, _height, result, comparand: 0, levelOfParallelism);
+			var count = await _indexOf.ParallelIndexOfGreaterThan(_width, _height, _source, result, comparand: 0, levelOfParallelism: levelOfParallelism);
 
 			count.Should().Be(_width * _height);
 			var results = new HashSet<(int, int)>();

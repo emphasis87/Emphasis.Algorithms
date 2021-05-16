@@ -88,14 +88,17 @@ namespace Emphasis.Algorithms.IndexOf
 		}
 
 
-		public async Task<int> ParallelIndexOfGreaterThan(int[] source, int width, int height, int[] indexes, int comparand, int levelOfParallelism = 0)
+		public async Task<int> ParallelIndexOfGreaterThan(int width, int height, int[] source, int[] indexes, int comparand, int levelOfParallelism = 0)
 		{
 			if (width * height > source.Length)
 				throw new ArgumentOutOfRangeException(nameof(width), $"The {nameof(width)} and {nameof(height)} are out of range of {nameof(source)}.");
 
 			if (levelOfParallelism == 0)
 				levelOfParallelism = Environment.ProcessorCount / 2;
-			
+
+			if (levelOfParallelism == 1)
+				return IndexOfGreaterThan(width, height, source, indexes, comparand);
+
 			var size = width * height;
 
 			var position = 0;

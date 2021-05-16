@@ -38,7 +38,7 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 			_indexOf = new IndexOfAlgorithms();
 		}
 
-		[ParamsSource(nameof(SaturationSource))]
+		//[ParamsSource(nameof(SaturationSource))]
 		public int Saturation { get; set; } = 10;
 
 		public IEnumerable<int> SaturationSource => Enumerable.Range(1, 5).Select(x => x * 10);
@@ -53,7 +53,7 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 		[Benchmark]
 		public async Task IndexOfGreaterThan()
 		{
-			_result = await _indexOf.ParallelIndexOfGreaterThan(_source, _width, _height, _indexes, 99 - Saturation, LevelOfParallelism);
+			_result = await _indexOf.ParallelIndexOfGreaterThan(_width, _height, _source, _indexes, 99 - Saturation, LevelOfParallelism);
 		}
 	}
 }
