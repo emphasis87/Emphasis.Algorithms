@@ -11,7 +11,6 @@ namespace Emphasis.Algorithms.Tests
 	public class IndexOfTests
 	{
 		private int[] _source;
-		private int[] _indexes;
 		private int _width;
 		private int _height;
 		private int _size;
@@ -24,8 +23,7 @@ namespace Emphasis.Algorithms.Tests
 			_width = 1920;
 			_size = _height * _width;
 			_source = new int[_size];
-			_indexes = new int[_source.Length * 2];
-			
+
 			for (var x = 0; x < _source.Length; x++)
 			{
 				_source[x] = 1;
