@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Emphasis.OpenCL" Version="1.0.4" />
+    <PackageReference Include="Emphasis.OpenCL" Version="1.0.8" />
   </ItemGroup>
 
   <ItemGroup>
