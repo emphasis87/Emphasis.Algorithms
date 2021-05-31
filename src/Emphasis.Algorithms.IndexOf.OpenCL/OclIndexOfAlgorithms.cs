@@ -15,7 +15,7 @@ namespace Emphasis.Algorithms.IndexOf.OpenCL
 
 		public int IndexOfGreaterThan(int width, int height, nint sourceBufferId, nint indexesBufferId, int comparand)
 		{
-
+			
 		}
 	}
 }
