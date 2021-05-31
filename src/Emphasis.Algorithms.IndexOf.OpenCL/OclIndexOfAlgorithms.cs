@@ -14,7 +14,7 @@ namespace Emphasis.Algorithms.IndexOf.OpenCL
 				extensions.Contains("cl_khr_global_int32_base_atomics") && extensions.Contains("cl_khr_local_int32_base_atomics ");
 		}
 
-		public async Task<int> IndexOfGreaterThan(nint queueId, int width, int height, nint sourceBufferId, nint indexesBufferId, int comparand)
+		public async Task<int> IndexOfGreaterThan(nint queueId, int width, int height, nint sourceBufferId, nint resultBufferId, int comparand)
 		{
 			var contextId = OclHelper.GetCommandQueueContext(queueId);
 			var deviceId = OclHelper.GetCommandQueueDevice(queueId);
@@ -32,6 +32,7 @@ namespace Emphasis.Algorithms.IndexOf.OpenCL
 
 			var programId = await OclProgramRepository.Shared.GetProgram(contextId, deviceId, Kernels.IndexOf, $"-DOperation=> -DAtomics_{atomicSize}");
 
+			return (int)programId;
 		}
 	}
 }
