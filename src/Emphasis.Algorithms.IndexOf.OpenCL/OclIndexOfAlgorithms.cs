@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Emphasis.OpenCL;
+using Silk.NET.OpenCL;
 using static Emphasis.OpenCL.OclHelper;
 
 namespace Emphasis.Algorithms.IndexOf.OpenCL
@@ -26,7 +27,7 @@ namespace Emphasis.Algorithms.IndexOf.OpenCL
 			return isSupported;
 		}
 
-		public async Task<int> IndexOfGreaterThan(nint queueId, int width, int height, nint sourceBufferId, nint resultBufferId, int comparand)
+		public async Task<nint> IndexOfGreaterThan(nint queueId, int width, int height, nint sourceBufferId, nint resultBufferId, int comparand)
 		{
 			if (!_programs.TryGetValue(queueId, out var programId))
 			{
@@ -44,12 +45,27 @@ namespace Emphasis.Algorithms.IndexOf.OpenCL
 				else
 					throw new NotSupportedException("The device does not support atomic operations.");
 
-				programId = await OclProgramRepository.Shared.GetProgram(contextId, deviceId, Kernels.IndexOf, $"-DOperation=> -DAtomics_{atomicSize}");
+				programId = await OclProgramRepository.Shared.GetProgram(contextId, deviceId, Kernels.IndexOf, $"-D Operation=> -D Atomics_{atomicSize} -D TSourceDepth=int -D TResultDepth=int");
 
 				_programs[queueId] = programId;
 			}
 
-			return (int)programId;
+			var kernelId = CreateKernel(programId, "IndexOf");
+
+			SetKernelArg(kernelId, 0, sourceBufferId);
+			SetKernelArg(kernelId, 1, resultBufferId);
+			SetKernelArgSize<int>(kernelId, 2, 32);
+			SetKernelArg(kernelId, 3, comparand);
+
+			var eventId = EnqueueNDRangeKernel(queueId, kernelId,
+				globalWorkSize: stackalloc nuint[] {(nuint) width, (nuint) height});
+
+			OnEventCompleted(eventId, () =>
+			{
+				ReleaseKernel(kernelId);
+			});
+
+			return eventId;
 		}
 	}
 }

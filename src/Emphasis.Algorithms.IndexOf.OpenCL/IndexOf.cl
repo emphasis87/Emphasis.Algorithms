@@ -15,7 +15,7 @@
 #define TResultDepth int
 #endif
 
-#ifndef 
+#ifndef Operation
 #define Operation ==
 #endif
 
@@ -23,7 +23,7 @@ void kernel IndexOf(
     global TSourceDepth* source,
     global TResultDepth* result,
     local TResultDepth* temp,
-    global int comparand,
+    int comparand
 ){
     int w = get_global_size(0);
     int x = get_global_id(0);

@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace Emphasis.Algorithms.Tests
 {
-	public class IndexOfTests
+	public class IndexOfAlgorithmsTests
 	{
 		private int[] _source;
 		private int _width;
