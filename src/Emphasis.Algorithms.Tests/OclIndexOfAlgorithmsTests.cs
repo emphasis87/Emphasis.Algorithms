@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Emphasis.Algorithms.IndexOf.OpenCL;
 using FluentAssertions;
@@ -23,16 +21,23 @@ namespace Emphasis.Algorithms.Tests
 			var contextId = CreateContext(platformId, new[] {deviceId});
 			var queueId = CreateCommandQueue(contextId, deviceId);
 
-			var srcBuffer = CopyBuffer(contextId, source.AsSpan());
-			var dstBuffer = CreateBuffer<int>(contextId, result.Length);
+			var srcBufferId = CopyBuffer(contextId, source.AsSpan());
+			var dstBufferId = CreateBuffer<int>(contextId, result.Length);
 
 			var indexOf = new OclIndexOfAlgorithms();
-			var eventId = await indexOf.IndexOfGreaterThan(queueId, 3, 2, srcBuffer, dstBuffer, comparand: 0);
+			var eventId = await indexOf.IndexOfGreaterThan(queueId, 3, 2, srcBufferId, dstBufferId, comparand: 0);
 			
 			await WaitForEventsAsync(eventId);
 
-			var readEventId = EnqueueReadBuffer(queueId, dstBuffer, true, 0, result.Length, result.AsSpan());
+			var readEventId = EnqueueReadBuffer(queueId, dstBufferId, true, 0, result.Length, result.AsSpan());
 			await WaitForEventsAsync(readEventId);
+
+			ReleaseEvent(eventId);
+			ReleaseEvent(readEventId);
+			ReleaseMemObject(srcBufferId);
+			ReleaseMemObject(dstBufferId);
+			ReleaseCommandQueue(queueId);
+			ReleaseContext(contextId);
 			
 			(result[0], result[1]).Should().Be((2, 0));
 			(result[2], result[3]).Should().Be((1, 1));
