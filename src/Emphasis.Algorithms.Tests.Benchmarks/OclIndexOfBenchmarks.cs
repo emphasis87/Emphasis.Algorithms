@@ -13,7 +13,7 @@ using static Emphasis.OpenCL.OclHelper;
 namespace Emphasis.Algorithms.Tests.Benchmarks
 {
 	[MarkdownExporter]
-	[ShortRunJob]
+	[SimpleJob(invocationCount: 1000)]
 	[Orderer(SummaryOrderPolicy.Method, MethodOrderPolicy.Alphabetical)]
 	public class OclIndexOfBenchmarks
 	{
@@ -23,6 +23,7 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 		private nint _queueId;
 		private nint _sourceBufferId;
 		private nint _resultBufferId;
+		private nint _counterBufferId;
 
 		private int[] _source;
 		private int[] _indexes;
@@ -47,6 +48,7 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 
 			_sourceBufferId = OclMemoryPool.Shared.RentBuffer<int>(_contextId, _size);
 			_resultBufferId = OclMemoryPool.Shared.RentBuffer<int>(_contextId, _size * 2);
+			_counterBufferId = OclMemoryPool.Shared.RentBuffer<int>(_contextId, 1);
 
 			_source = new int[_size];
 			_indexes = new int[_source.Length * 2];
@@ -65,23 +67,24 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 		{
 			OclMemoryPool.Shared.ReturnBuffer(_sourceBufferId);
 			OclMemoryPool.Shared.ReturnBuffer(_resultBufferId);
+			OclMemoryPool.Shared.ReturnBuffer(_counterBufferId);
 
 			ReleaseCommandQueue(_queueId);
 			ReleaseContext(_contextId);
 		}
 
-		//[ParamsSource(nameof(SaturationSource))]
+		[ParamsSource(nameof(SaturationSource))]
 		public int Saturation { get; set; } = 10;
 
 		public IEnumerable<int> SaturationSource => Enumerable.Range(1, 5).Select(x => x * 10);
-
-		private int _result;
 
 		[Benchmark]
 		public async Task IndexOfGreaterThan()
 		{
 			var comparand = 99 - Saturation;
-			_result = await _indexOf.IndexOfGreaterThan(_queueId, _width, _height, _sourceBufferId, _resultBufferId, comparand);
+			var eventId = await _indexOf.IndexOfGreaterThan(_queueId, _width, _height, _sourceBufferId, _resultBufferId, _counterBufferId, comparand);
+			await WaitForEventsAsync(eventId);
+			ReleaseEvent(eventId);
 		}
 	}
 }

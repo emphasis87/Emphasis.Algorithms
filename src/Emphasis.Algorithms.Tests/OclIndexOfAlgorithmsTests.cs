@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Emphasis.Algorithms.IndexOf.OpenCL;
@@ -10,11 +11,32 @@ namespace Emphasis.Algorithms.Tests
 {
 	public class OclIndexOfAlgorithmsTests
 	{
-		[Test]
-		public async Task Should_find_indexOf_greaterThan_simple()
+		private int[] _source;
+		private int _width;
+		private int _height;
+		private int _size;
+
+		[OneTimeSetUp]
+		public void GlobalSetup()
 		{
-			var source = new int[] { 0, 0, 1, 0, 1, 0 };
+			_height = 1200;
+			_width = 1920;
+			_size = _height * _width;
+			_source = new int[_size];
+
+			for (var x = 0; x < _source.Length; x++)
+			{
+				_source[x] = 1;
+			}
+		}
+
+		[Test]
+		public async Task IndexOf_greaterThan_simple()
+		{
+			// Arrange:
+			var source = new int[] { 0, 0, 1, 1, 1, 0 };
 			var result = new int[source.Length * 2];
+			var count = new int[1] {0};
 
 			var platformId = GetPlatforms().First();
 			var deviceId = GetPlatformDevices(platformId).First();
@@ -23,27 +45,124 @@ namespace Emphasis.Algorithms.Tests
 
 			var srcBufferId = CopyBuffer(contextId, source.AsSpan());
 			var dstBufferId = CreateBuffer<int>(contextId, result.Length);
+			var cntBufferId = CreateBuffer<int>(contextId, 1);
 
+			// Act:
 			var indexOf = new OclIndexOfAlgorithms();
-			var eventId = await indexOf.IndexOfGreaterThan(queueId, 3, 2, srcBufferId, dstBufferId, comparand: 0);
+			var eventId = await indexOf.IndexOfGreaterThan(queueId, 3, 2, srcBufferId, dstBufferId, cntBufferId, comparand: 0);
 			
+			// Assert:
 			await WaitForEventsAsync(eventId);
 
-			var readEventId = EnqueueReadBuffer(queueId, dstBufferId, true, 0, result.Length, result.AsSpan());
-			await WaitForEventsAsync(readEventId);
-
-			ReleaseEvent(eventId);
-			ReleaseEvent(readEventId);
-			ReleaseMemObject(srcBufferId);
-			ReleaseMemObject(dstBufferId);
-			ReleaseCommandQueue(queueId);
-			ReleaseContext(contextId);
+			var readDstId = EnqueueReadBuffer(queueId, dstBufferId, false, 0, result.Length, result.AsSpan());
+			var readCntId = EnqueueReadBuffer(queueId, cntBufferId, false, 0, 1, count.AsSpan());
+			await WaitForEventsAsync(readDstId, readCntId);
 			
-			(result[0], result[1]).Should().Be((2, 0));
-			(result[2], result[3]).Should().Be((1, 1));
-			for (var i = 4; i < result.Length; i++)
+			ReleaseContext(contextId);
+
+			count[0].Should().Be(3);
+
+			var indexes = new HashSet<(int, int)>();
+			for (var i = 0; i < result.Length; i+=2)
 			{
-				result[i].Should().Be(0);
+				indexes.Add((result[i], result[i + 1]));
+			}
+
+			indexes.Should().BeEquivalentTo((2, 0), (0, 1), (1, 1), (0, 0));
+		}
+		
+		[Test]
+		public async Task IndexOf_greaterThan()
+		{
+			var w = 100;
+			var h = 8;
+			var source = new int[w * h];
+			for (var y = 0; y < h; y++)
+			{
+				source[y * w + 1] = 1;
+				source[y * w + 9] = 1;
+			}
+			var result = new int[source.Length * 2];
+			var count = new int[1] { 0 };
+
+			var platformId = GetPlatforms().First();
+			var deviceId = GetPlatformDevices(platformId).First();
+			var contextId = CreateContext(platformId, new[] { deviceId });
+			var queueId = CreateCommandQueue(contextId, deviceId);
+
+			var srcBufferId = CopyBuffer(contextId, source.AsSpan());
+			var dstBufferId = CreateBuffer<int>(contextId, result.Length);
+			var cntBufferId = CreateBuffer<int>(contextId, 1);
+
+			// Act:
+			var indexOf = new OclIndexOfAlgorithms();
+			var eventId = await indexOf.IndexOfGreaterThan(queueId, w, h, srcBufferId, dstBufferId, cntBufferId, comparand: 0);
+
+			// Assert:
+			await WaitForEventsAsync(eventId);
+
+			var readDstId = EnqueueReadBuffer(queueId, dstBufferId, false, 0, result.Length, result.AsSpan());
+			var readCntId = EnqueueReadBuffer(queueId, cntBufferId, false, 0, 1, count.AsSpan());
+			await WaitForEventsAsync(readDstId, readCntId);
+			
+			ReleaseContext(contextId);
+
+			count[0].Should().Be(2 * h);
+
+			var results = new HashSet<(int, int)>();
+			for (var i = 0; i < count[0] * 2; i += 2)
+			{
+				results.Add((result[i], result[i + 1]));
+			}
+			for (var y = 0; y < h; y++)
+			{
+				results.Should().Contain((1, y));
+				results.Should().Contain((9, y));
+			}
+		}
+		
+		[Test]
+		public async Task IndexOf_greaterThan_full_saturation()
+		{
+			var source = _source;
+			var result = new int[source.Length * 2];
+			var count = new int[1] { 0 };
+
+			var platformId = GetPlatforms().First();
+			var deviceId = GetPlatformDevices(platformId).First();
+			var contextId = CreateContext(platformId, new[] { deviceId });
+			var queueId = CreateCommandQueue(contextId, deviceId);
+
+			var srcBufferId = CopyBuffer(contextId, source.AsSpan());
+			var dstBufferId = CreateBuffer<int>(contextId, result.Length);
+			var cntBufferId = CreateBuffer<int>(contextId, 1);
+
+			// Act:
+			var indexOf = new OclIndexOfAlgorithms();
+			var eventId = await indexOf.IndexOfGreaterThan(queueId, _width, _height, srcBufferId, dstBufferId, cntBufferId, comparand: 0);
+
+			// Assert:
+			await WaitForEventsAsync(eventId);
+
+			var readDstId = EnqueueReadBuffer(queueId, dstBufferId, false, 0, result.Length, result.AsSpan());
+			var readCntId = EnqueueReadBuffer(queueId, cntBufferId, false, 0, 1, count.AsSpan());
+			await WaitForEventsAsync(readDstId, readCntId);
+			
+			ReleaseContext(contextId);
+
+			count[0].Should().Be(_width * _height);
+
+			var results = new HashSet<(int, int)>();
+			for (var i = 0; i < count[0] * 2; i += 2)
+			{
+				results.Add((result[i], result[i + 1]));
+			}
+			for (var y = 0; y < _height; y++)
+			{
+				for (var x = 0; x < _height; x++)
+				{
+					results.Should().Contain((x, y));
+				}
 			}
 		}
 	}

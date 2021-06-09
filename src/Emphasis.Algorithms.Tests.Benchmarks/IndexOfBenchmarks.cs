@@ -38,17 +38,17 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 			_indexOf = new IndexOfAlgorithms();
 		}
 
-		//[ParamsSource(nameof(SaturationSource))]
+		[ParamsSource(nameof(SaturationSource))]
 		public int Saturation { get; set; } = 10;
 
 		public IEnumerable<int> SaturationSource => Enumerable.Range(1, 5).Select(x => x * 10);
 
-		[ParamsSource(nameof(LevelOfParallelismSource))]
+		//[ParamsSource(nameof(LevelOfParallelismSource))]
 		public int LevelOfParallelism { get; set; }
 
 		public IEnumerable<int> LevelOfParallelismSource => Enumerable.Range(1, Environment.ProcessorCount);
 
-		private int _result;
+		public int _result;
 
 		[Benchmark]
 		public async Task IndexOfGreaterThan()

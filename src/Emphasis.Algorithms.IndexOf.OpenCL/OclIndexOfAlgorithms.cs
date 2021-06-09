@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Emphasis.OpenCL;
-using Silk.NET.OpenCL;
 using static Emphasis.OpenCL.OclHelper;
 
 namespace Emphasis.Algorithms.IndexOf.OpenCL
@@ -10,7 +9,7 @@ namespace Emphasis.Algorithms.IndexOf.OpenCL
 	public class OclIndexOfAlgorithms
 	{
 		private readonly ConcurrentDictionary<nint, bool> _isSupported = new();
-		private readonly ConcurrentDictionary<nint, nint> _programs = new();
+		private readonly ConcurrentDictionary<nint, (nint contextId, nint deviceId, nint programId, string counterType, uint workGroupSize)> _indexOf = new();
 
 		public bool IsSupported(nint deviceId)
 		{
@@ -26,10 +25,19 @@ namespace Emphasis.Algorithms.IndexOf.OpenCL
 
 			return isSupported;
 		}
-
-		public async Task<nint> IndexOfGreaterThan(nint queueId, int width, int height, nint sourceBufferId, nint resultBufferId, int comparand)
+		
+		private async Task<nint> IndexOf(
+			nint queueId,
+			int width,
+			int height,
+			nint sourceBufferId,
+			nint resultBufferId,
+			nint counterBufferId,
+			int comparand,
+			string operation)
 		{
-			if (!_programs.TryGetValue(queueId, out var programId))
+			nint kernelId;
+			if (!_indexOf.TryGetValue(queueId, out var indexOf))
 			{
 				var contextId = GetCommandQueueContext(queueId);
 				var deviceId = GetCommandQueueDevice(queueId);
@@ -37,28 +45,36 @@ namespace Emphasis.Algorithms.IndexOf.OpenCL
 				var extensions = GetDeviceExtensions(deviceId);
 				var hasAtomic32 = extensions.Contains("cl_khr_global_int32_base_atomics") && extensions.Contains("cl_khr_local_int32_base_atomics ");
 				var hasAtomic64 = extensions.Contains("cl_khr_int64_base_atomics");
-				string atomicSize;
+				string counterType;
 				if (hasAtomic32)
-					atomicSize = "32";
+					counterType = "int";
 				else if (hasAtomic64)
-					atomicSize = "64";
+					counterType = "long";
 				else
 					throw new NotSupportedException("The device does not support atomic operations.");
 
-				programId = await OclProgramRepository.Shared.GetProgram(contextId, deviceId, Kernels.IndexOf, $"-D Operation=> -D Atomics_{atomicSize} -D TSourceDepth=int -D TResultDepth=int");
+				var programId = await OclProgramRepository.Shared.GetProgram(contextId, deviceId, Kernels.IndexOf, $"-D Operation={operation} -D TCounter={counterType} -D TSourceDepth=int -D TResultDepth=int");
 
-				_programs[queueId] = programId;
+				kernelId = CreateKernel(programId, "IndexOf");
+				var workGroupSize = GetKernelWorkGroupSize(kernelId, deviceId);
+
+				indexOf = (contextId, deviceId, programId, counterType, workGroupSize);
+				_indexOf[queueId] = indexOf;
 			}
-
-			var kernelId = CreateKernel(programId, "IndexOf");
-
+			else
+			{
+				kernelId = CreateKernel(indexOf.programId, "IndexOf");
+			}
+			
 			SetKernelArg(kernelId, 0, sourceBufferId);
 			SetKernelArg(kernelId, 1, resultBufferId);
-			SetKernelArgSize<int>(kernelId, 2, 32);
-			SetKernelArg(kernelId, 3, comparand);
+			SetKernelArg(kernelId, 2, counterBufferId);
+			SetKernelArgSize<int>(kernelId, 3, (int)(indexOf.workGroupSize * 2));
+			SetKernelArg(kernelId, 4, comparand);
 
 			var eventId = EnqueueNDRangeKernel(queueId, kernelId,
-				globalWorkSize: stackalloc nuint[] {(nuint) width, (nuint) height});
+				globalWorkSize: stackalloc nuint[] { (nuint)width, (nuint)height },
+				localWorkSize: stackalloc nuint[] { indexOf.workGroupSize, 1 });
 
 			OnEventCompleted(eventId, () =>
 			{
@@ -66,6 +82,31 @@ namespace Emphasis.Algorithms.IndexOf.OpenCL
 			});
 
 			return eventId;
+		}
+
+		public Task<nint> IndexOfGreaterThan(nint queueId, int width, int height, nint sourceBufferId, nint resultBufferId, nint counterBufferId, int comparand)
+		{
+			return IndexOf(queueId, width, height, sourceBufferId, resultBufferId, counterBufferId, comparand, ">");
+		}
+
+		public Task<nint> IndexOfGreaterThanOrEqual(nint queueId, int width, int height, nint sourceBufferId, nint resultBufferId, nint counterBufferId, int comparand)
+		{
+			return IndexOf(queueId, width, height, sourceBufferId, resultBufferId, counterBufferId, comparand, ">=");
+		}
+
+		public Task<nint> IndexOfLessThan(nint queueId, int width, int height, nint sourceBufferId, nint resultBufferId, nint counterBufferId, int comparand)
+		{
+			return IndexOf(queueId, width, height, sourceBufferId, resultBufferId, counterBufferId, comparand, "<");
+		}
+
+		public Task<nint> IndexOfLessThanOrEqual(nint queueId, int width, int height, nint sourceBufferId, nint resultBufferId, nint counterBufferId, int comparand)
+		{
+			return IndexOf(queueId, width, height, sourceBufferId, resultBufferId, counterBufferId, comparand, "<=");
+		}
+
+		public Task<nint> IndexOfEqual(nint queueId, int width, int height, nint sourceBufferId, nint resultBufferId, nint counterBufferId, int comparand)
+		{
+			return IndexOf(queueId, width, height, sourceBufferId, resultBufferId, counterBufferId, comparand, "==");
 		}
 	}
 }
