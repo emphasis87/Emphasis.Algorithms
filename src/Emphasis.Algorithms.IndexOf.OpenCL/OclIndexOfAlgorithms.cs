@@ -89,7 +89,7 @@ namespace Emphasis.Algorithms.IndexOf.OpenCL
 			return IndexOf(queueId, width, height, sourceBufferId, resultBufferId, counterBufferId, comparand, ">");
 		}
 
-		public Task<nint> IndexOfGreaterThanOrEqual(nint queueId, int width, int height, nint sourceBufferId, nint resultBufferId, nint counterBufferId, int comparand)
+		public Task<nint> IndexOfGreaterThanOrEquals(nint queueId, int width, int height, nint sourceBufferId, nint resultBufferId, nint counterBufferId, int comparand)
 		{
 			return IndexOf(queueId, width, height, sourceBufferId, resultBufferId, counterBufferId, comparand, ">=");
 		}
@@ -99,12 +99,12 @@ namespace Emphasis.Algorithms.IndexOf.OpenCL
 			return IndexOf(queueId, width, height, sourceBufferId, resultBufferId, counterBufferId, comparand, "<");
 		}
 
-		public Task<nint> IndexOfLessThanOrEqual(nint queueId, int width, int height, nint sourceBufferId, nint resultBufferId, nint counterBufferId, int comparand)
+		public Task<nint> IndexOfLessThanOrEquals(nint queueId, int width, int height, nint sourceBufferId, nint resultBufferId, nint counterBufferId, int comparand)
 		{
 			return IndexOf(queueId, width, height, sourceBufferId, resultBufferId, counterBufferId, comparand, "<=");
 		}
 
-		public Task<nint> IndexOfEqual(nint queueId, int width, int height, nint sourceBufferId, nint resultBufferId, nint counterBufferId, int comparand)
+		public Task<nint> IndexOfEquals(nint queueId, int width, int height, nint sourceBufferId, nint resultBufferId, nint counterBufferId, int comparand)
 		{
 			return IndexOf(queueId, width, height, sourceBufferId, resultBufferId, counterBufferId, comparand, "==");
 		}
