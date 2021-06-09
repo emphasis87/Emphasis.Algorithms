@@ -8,7 +8,7 @@
     <PackageTags>IndexOf</PackageTags>
     <Description>
       A library for common algorithms.
-      IndexOf&lt;Operation&gt; - Compares an array to an operand and collects (x, y) indexes where true.
+      IndexOf - Compares an array to an operand and collects (x, y) indexes where true.
     </Description>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

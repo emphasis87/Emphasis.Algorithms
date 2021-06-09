@@ -7,12 +7,12 @@
 #pragma OPENCL EXTENSION cl_khr_int64_base_atomics : enable
 #endif
 
-#ifndef TSourceDepth
-#define TSourceDepth int
+#ifndef TSource
+#define TSource int
 #endif
 
-#ifndef TResultDepth
-#define TResultDepth int
+#ifndef TResult
+#define TResult int
 #endif
 
 #ifndef Operation
@@ -20,11 +20,11 @@
 #endif
 
 void kernel IndexOf(
-    global TSourceDepth* source,
-    global TResultDepth* result,
+    global TSource* source,
+    global TResult* result,
     global TCounter* counter,
-    local TResultDepth* temp,
-    int comparand
+    // local TResult* temp,
+    TSource comparand
 ){
     int x = get_global_id(0);
     int y = get_global_id(1);
@@ -33,7 +33,7 @@ void kernel IndexOf(
     int lw = get_local_size(0);
 
     int d = x + y * w;
-    TSourceDepth v = source[d];
+    TSource v = source[d];
 
     // Initialize the global counter
     if (x == 0 && y == 0){

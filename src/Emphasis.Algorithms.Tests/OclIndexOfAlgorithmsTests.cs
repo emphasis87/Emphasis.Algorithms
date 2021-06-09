@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Emphasis.Algorithms.IndexOf.OpenCL;
+using Emphasis.OpenCL;
 using FluentAssertions;
 using NUnit.Framework;
 using static Emphasis.OpenCL.OclHelper;
@@ -49,7 +50,8 @@ namespace Emphasis.Algorithms.Tests
 
 			// Act:
 			var indexOf = new OclIndexOfAlgorithms();
-			var eventId = await indexOf.IndexOfGreaterThan(queueId, 3, 2, srcBufferId, dstBufferId, cntBufferId, comparand: 0);
+			var eventId = await indexOf.IndexOfGreaterThan(queueId, 3, 2, 
+				new OclBuffer<int>(srcBufferId), new OclBuffer<int>(dstBufferId), new OclBuffer<int>(cntBufferId), comparand: 0);
 			
 			// Assert:
 			await WaitForEventsAsync(eventId);
@@ -96,7 +98,8 @@ namespace Emphasis.Algorithms.Tests
 
 			// Act:
 			var indexOf = new OclIndexOfAlgorithms();
-			var eventId = await indexOf.IndexOfGreaterThan(queueId, w, h, srcBufferId, dstBufferId, cntBufferId, comparand: 0);
+			var eventId = await indexOf.IndexOfGreaterThan(queueId, w, h, 
+				new OclBuffer<int>(srcBufferId), new OclBuffer<int>(dstBufferId), new OclBuffer<int>(cntBufferId), comparand: 0);
 
 			// Assert:
 			await WaitForEventsAsync(eventId);
@@ -139,7 +142,8 @@ namespace Emphasis.Algorithms.Tests
 
 			// Act:
 			var indexOf = new OclIndexOfAlgorithms();
-			var eventId = await indexOf.IndexOfGreaterThan(queueId, _width, _height, srcBufferId, dstBufferId, cntBufferId, comparand: 0);
+			var eventId = await indexOf.IndexOfGreaterThan(queueId, _width, _height, 
+				new OclBuffer<int>(srcBufferId), new OclBuffer<int>(dstBufferId), new OclBuffer<int>(cntBufferId), comparand: 0);
 
 			// Assert:
 			await WaitForEventsAsync(eventId);

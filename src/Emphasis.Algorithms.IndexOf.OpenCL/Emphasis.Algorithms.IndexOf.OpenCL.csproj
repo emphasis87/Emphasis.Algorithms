@@ -9,14 +9,14 @@
     <PackageTags>IndexOf;OpenCL</PackageTags>
     <Description>
       A library for common algorithms.
-      IndexOf&lt;Operation&gt; - Compares an array to an operand and collects (x, y) indexes where true.
+      IndexOf - Compares an array to an operand and collects (x, y) indexes where true.
     </Description>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <IsPackageable>true</IsPackageable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Emphasis.OpenCL" Version="1.0.15" />
+    <PackageReference Include="Emphasis.OpenCL" Version="1.0.18" />
   </ItemGroup>
 
   <ItemGroup>

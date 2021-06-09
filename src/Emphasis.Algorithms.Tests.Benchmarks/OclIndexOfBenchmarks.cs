@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
-using Emphasis.Algorithms.IndexOf;
 using Emphasis.Algorithms.IndexOf.OpenCL;
 using Emphasis.OpenCL;
 using static Emphasis.OpenCL.OclHelper;
@@ -82,7 +80,8 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 		public async Task IndexOfGreaterThan()
 		{
 			var comparand = 99 - Saturation;
-			var eventId = await _indexOf.IndexOfGreaterThan(_queueId, _width, _height, _sourceBufferId, _resultBufferId, _counterBufferId, comparand);
+			var eventId = await _indexOf.IndexOfGreaterThan(_queueId, _width, _height, 
+				new OclBuffer<int>(_sourceBufferId), new OclBuffer<int>(_resultBufferId), new OclBuffer<int>(_counterBufferId), comparand);
 			await WaitForEventsAsync(eventId);
 			ReleaseEvent(eventId);
 		}
