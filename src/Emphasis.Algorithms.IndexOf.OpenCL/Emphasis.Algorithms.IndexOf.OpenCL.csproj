@@ -2,6 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>Emphasis.Algorithms.IndexOf.OpenCL</RootNamespace>
+    <Product>Emphasis.Algorithms</Product>
+    <Authors>Luboš Hemala</Authors>
+    <PackageId>Emphasis.Algorithms.IndexOf.OpenCL</PackageId>
+    <PackageTags>IndexOf;OpenCL</PackageTags>
+    <Description>
+	  A library for common algorithms.
+    </Description>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <IsPackageable>true</IsPackageable>
   </PropertyGroup>
 
   <ItemGroup>
