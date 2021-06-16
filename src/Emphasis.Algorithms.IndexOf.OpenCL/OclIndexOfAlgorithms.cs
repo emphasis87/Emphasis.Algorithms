@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Emphasis.OpenCL;
+using Silk.NET.OpenCL;
 using static Emphasis.OpenCL.OclHelper;
 
 namespace Emphasis.Algorithms.IndexOf.OpenCL
@@ -71,8 +72,8 @@ namespace Emphasis.Algorithms.IndexOf.OpenCL
 			SetKernelArg(kernelId, 3, comparand);
 
 			var eventId = EnqueueNDRangeKernel(queueId, kernelId,
-				globalWorkSize: stackalloc nuint[] { (nuint)width, (nuint)height },
-				localWorkSize: stackalloc nuint[] { indexOf.workGroupSize, 1 });
+				globalWorkSize: stackalloc nuint[] {(nuint) width, (nuint) height});
+				//localWorkSize: stackalloc nuint[] { indexOf.workGroupSize, 1 });
 
 			OnEventCompleted(eventId, () =>
 			{
