@@ -8,8 +8,8 @@
     <PackageId>Emphasis.Algorithms.IndexOf.OpenCL</PackageId>
     <PackageTags>IndexOf;OpenCL</PackageTags>
     <Description>
-      A library for common algorithms.
-      IndexOf - Compares an array to an operand and collects (x, y) indexes where true.
+A library for common algorithms.
+IndexOf - Compares an array to an operand and collects (x, y) indexes where true.
     </Description>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <IsPackageable>true</IsPackageable>
