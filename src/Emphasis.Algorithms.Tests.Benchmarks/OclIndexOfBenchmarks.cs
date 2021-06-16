@@ -82,7 +82,7 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 			var comparand = 99 - Saturation;
 			var eventId = await _indexOf.IndexOfGreaterThan(_queueId, _width, _height, 
 				new OclBuffer<int>(_sourceBufferId), new OclBuffer<int>(_resultBufferId), new OclBuffer<int>(_counterBufferId), comparand);
-			WaitForEvents(eventId);
+			await WaitForEventsAsync(eventId);
 			ReleaseEvent(eventId);
 		}
 	}

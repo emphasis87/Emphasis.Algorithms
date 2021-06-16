@@ -16,7 +16,7 @@ IndexOf - Compares an array to an operand and collects (x, y) indexes where true
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Emphasis.OpenCL" Version="1.0.18" />
+    <PackageReference Include="Emphasis.OpenCL" Version="1.0.19" />
   </ItemGroup>
 
   <ItemGroup>
