@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using Emgu.CV;
+using Emgu.CV.CvEnum;
 using Emphasis.Algorithms.IndexOf.OpenCL;
+using Emphasis.Algorithms.Tests.samples;
 using Emphasis.OpenCL;
 using FluentAssertions;
 using NUnit.Framework;
@@ -168,6 +172,28 @@ namespace Emphasis.Algorithms.Tests
 					results.Should().Contain((x, y));
 				}
 			}
+		}
+
+		[Test]
+		public async Task IndexOf()
+		{
+			var sourceBitmap = Samples.sample13;
+
+			var w = sourceBitmap.Width;
+			var h = sourceBitmap.Height;
+
+			using var src = new UMat();
+
+			var srcMat = sourceBitmap.ToMat();
+			srcMat.CopyTo(src);
+
+			using var gray = new UMat();
+			using var resized = new UMat();
+			using var canny = new UMat();
+
+			CvInvoke.CvtColor(src, gray, ColorConversion.Bgra2Gray);
+			CvInvoke.Resize(gray, resized, new Size(w * 2, h * 2));
+			CvInvoke.Canny(resized, canny, 100, 40);
 		}
 	}
 }
