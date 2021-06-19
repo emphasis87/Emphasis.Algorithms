@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Emphasis.OpenCL;
-using Silk.NET.OpenCL;
 using static Emphasis.OpenCL.OclHelper;
 
 namespace Emphasis.Algorithms.IndexOf.OpenCL
@@ -83,27 +82,32 @@ namespace Emphasis.Algorithms.IndexOf.OpenCL
 			return eventId;
 		}
 
-		public Task<nint> IndexOfGreaterThan(nint queueId, int width, int height, OclTypedBuffer sourceBuffer, OclTypedBuffer resultBuffer, OclTypedBuffer counterBuffer, int comparand)
+		public Task<nint> IndexOfGreaterThan<T>(nint queueId, int width, int height, OclTypedBuffer sourceBuffer, OclTypedBuffer resultBuffer, OclTypedBuffer counterBuffer, T comparand)
+			where T : unmanaged
 		{
 			return IndexOf(queueId, width, height, sourceBuffer, resultBuffer, counterBuffer, comparand, ">");
 		}
 
-		public Task<nint> IndexOfGreaterThanOrEquals(nint queueId, int width, int height, OclTypedBuffer sourceBuffer, OclTypedBuffer resultBuffer, OclTypedBuffer counterBuffer, int comparand)
+		public Task<nint> IndexOfGreaterThanOrEquals<T>(nint queueId, int width, int height, OclTypedBuffer sourceBuffer, OclTypedBuffer resultBuffer, OclTypedBuffer counterBuffer, T comparand)
+			where T : unmanaged
 		{
 			return IndexOf(queueId, width, height, sourceBuffer, resultBuffer, counterBuffer, comparand, ">=");
 		}
 
-		public Task<nint> IndexOfLessThan(nint queueId, int width, int height, OclTypedBuffer sourceBuffer, OclTypedBuffer resultBuffer, OclTypedBuffer counterBuffer, int comparand)
+		public Task<nint> IndexOfLessThan<T>(nint queueId, int width, int height, OclTypedBuffer sourceBuffer, OclTypedBuffer resultBuffer, OclTypedBuffer counterBuffer, T comparand)
+			where T : unmanaged
 		{
 			return IndexOf(queueId, width, height, sourceBuffer, resultBuffer, counterBuffer, comparand, "<");
 		}
 
-		public Task<nint> IndexOfLessThanOrEquals(nint queueId, int width, int height, OclTypedBuffer sourceBuffer, OclTypedBuffer resultBuffer, OclTypedBuffer counterBuffer, int comparand)
+		public Task<nint> IndexOfLessThanOrEquals<T>(nint queueId, int width, int height, OclTypedBuffer sourceBuffer, OclTypedBuffer resultBuffer, OclTypedBuffer counterBuffer, T comparand)
+			where T : unmanaged
 		{
 			return IndexOf(queueId, width, height, sourceBuffer, resultBuffer, counterBuffer, comparand, "<=");
 		}
 
-		public Task<nint> IndexOfEquals(nint queueId, int width, int height, OclTypedBuffer sourceBuffer, OclTypedBuffer resultBuffer, OclTypedBuffer counterBuffer, int comparand)
+		public Task<nint> IndexOfEquals<T>(nint queueId, int width, int height, OclTypedBuffer sourceBuffer, OclTypedBuffer resultBuffer, OclTypedBuffer counterBuffer, T comparand)
+			where T : unmanaged
 		{
 			return IndexOf(queueId, width, height, sourceBuffer, resultBuffer, counterBuffer, comparand, "==");
 		}

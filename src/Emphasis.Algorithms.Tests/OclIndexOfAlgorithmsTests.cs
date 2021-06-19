@@ -42,6 +42,8 @@ namespace Emphasis.Algorithms.Tests
 			var source = new int[] { 0, 0, 1, 1, 1, 0 };
 			var result = new int[source.Length * 2];
 			var count = new int[1] {0};
+			var w = 3;
+			var h = 2;
 
 			var platformId = GetPlatforms().First();
 			var deviceId = GetPlatformDevices(platformId).First();
@@ -54,19 +56,20 @@ namespace Emphasis.Algorithms.Tests
 
 			// Act:
 			var indexOf = new OclIndexOfAlgorithms();
-			var eventId = await indexOf.IndexOfGreaterThan(queueId, 3, 2, 
+			var eventId = await indexOf.IndexOfGreaterThan(queueId, w, h, 
 				new OclBuffer<int>(srcBufferId), new OclBuffer<int>(dstBufferId), new OclBuffer<int>(cntBufferId), comparand: 0);
 			
 			// Assert:
-			await WaitForEventsAsync(eventId);
+			WaitForEvents(eventId);
 
 			var readDstId = EnqueueReadBuffer(queueId, dstBufferId, false, 0, result.Length, result.AsSpan());
 			var readCntId = EnqueueReadBuffer(queueId, cntBufferId, false, 0, 1, count.AsSpan());
-			await WaitForEventsAsync(readDstId, readCntId);
+			WaitForEvents(readDstId, readCntId);
 			
 			ReleaseContext(contextId);
 
-			count[0].Should().Be(3);
+			var cnt = count[0];
+			cnt.Should().Be(3);
 
 			var indexes = new HashSet<(int, int)>();
 			for (var i = 0; i < result.Length; i+=2)
@@ -75,6 +78,16 @@ namespace Emphasis.Algorithms.Tests
 			}
 
 			indexes.Should().BeEquivalentTo((2, 0), (0, 1), (1, 1), (0, 0));
+
+			var expected = new int[6];
+			for (var i = 0; i < cnt * 2; i += 2)
+			{
+				var x = result[i];
+				var y = result[i + 1];
+				expected[y * w + x] = 1;
+			}
+
+			source.Should().Equal(expected);
 		}
 		
 		[Test]
@@ -106,11 +119,11 @@ namespace Emphasis.Algorithms.Tests
 				new OclBuffer<int>(srcBufferId), new OclBuffer<int>(dstBufferId), new OclBuffer<int>(cntBufferId), comparand: 0);
 
 			// Assert:
-			await WaitForEventsAsync(eventId);
+			WaitForEvents(eventId);
 
 			var readDstId = EnqueueReadBuffer(queueId, dstBufferId, false, 0, result.Length, result.AsSpan());
 			var readCntId = EnqueueReadBuffer(queueId, cntBufferId, false, 0, 1, count.AsSpan());
-			await WaitForEventsAsync(readDstId, readCntId);
+			WaitForEvents(readDstId, readCntId);
 			
 			ReleaseContext(contextId);
 
@@ -150,11 +163,11 @@ namespace Emphasis.Algorithms.Tests
 				new OclBuffer<int>(srcBufferId), new OclBuffer<int>(dstBufferId), new OclBuffer<int>(cntBufferId), comparand: 0);
 
 			// Assert:
-			await WaitForEventsAsync(eventId);
+			WaitForEvents(eventId);
 
 			var readDstId = EnqueueReadBuffer(queueId, dstBufferId, false, 0, result.Length, result.AsSpan());
 			var readCntId = EnqueueReadBuffer(queueId, cntBufferId, false, 0, 1, count.AsSpan());
-			await WaitForEventsAsync(readDstId, readCntId);
+			WaitForEvents(readDstId, readCntId);
 			
 			ReleaseContext(contextId);
 
@@ -172,28 +185,6 @@ namespace Emphasis.Algorithms.Tests
 					results.Should().Contain((x, y));
 				}
 			}
-		}
-
-		[Test]
-		public async Task IndexOf()
-		{
-			var sourceBitmap = Samples.sample13;
-
-			var w = sourceBitmap.Width;
-			var h = sourceBitmap.Height;
-
-			using var src = new UMat();
-
-			var srcMat = sourceBitmap.ToMat();
-			srcMat.CopyTo(src);
-
-			using var gray = new UMat();
-			using var resized = new UMat();
-			using var canny = new UMat();
-
-			CvInvoke.CvtColor(src, gray, ColorConversion.Bgra2Gray);
-			CvInvoke.Resize(gray, resized, new Size(w * 2, h * 2));
-			CvInvoke.Canny(resized, canny, 100, 40);
 		}
 	}
 }
