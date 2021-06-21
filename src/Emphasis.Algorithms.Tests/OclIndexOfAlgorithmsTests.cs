@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
-using Emgu.CV;
-using Emgu.CV.CvEnum;
 using Emphasis.Algorithms.IndexOf.OpenCL;
-using Emphasis.Algorithms.Tests.samples;
 using Emphasis.OpenCL;
 using FluentAssertions;
 using NUnit.Framework;
@@ -89,7 +85,62 @@ namespace Emphasis.Algorithms.Tests
 
 			source.Should().Equal(expected);
 		}
-		
+
+		[Test]
+		public async Task IndexOf_greaterThan_simple_byte()
+		{
+			// Arrange:
+			var source = new byte[] { 0, 0, 1, 1, 1, 0 };
+			var result = new int[source.Length * 2];
+			var count = new int[1] { 0 };
+			var w = 3;
+			var h = 2;
+
+			var platformId = GetPlatforms().First();
+			var deviceId = GetPlatformDevices(platformId).First();
+			var contextId = CreateContext(platformId, new[] { deviceId });
+			var queueId = CreateCommandQueue(contextId, deviceId);
+
+			var srcBufferId = CopyBuffer(contextId, source.AsSpan());
+			var dstBufferId = CreateBuffer<int>(contextId, result.Length);
+			var cntBufferId = CreateBuffer<int>(contextId, 1);
+
+			// Act:
+			var indexOf = new OclIndexOfAlgorithms();
+			var eventId = await indexOf.IndexOfGreaterThan(queueId, w, h,
+				new OclBuffer<byte>(srcBufferId), new OclBuffer<int>(dstBufferId), new OclBuffer<int>(cntBufferId), comparand: (byte)0);
+
+			// Assert:
+			WaitForEvents(eventId);
+
+			var readDstId = EnqueueReadBuffer(queueId, dstBufferId, false, 0, result.Length, result.AsSpan());
+			var readCntId = EnqueueReadBuffer(queueId, cntBufferId, false, 0, 1, count.AsSpan());
+			WaitForEvents(readDstId, readCntId);
+
+			ReleaseContext(contextId);
+
+			var cnt = count[0];
+			cnt.Should().Be(3);
+
+			var indexes = new HashSet<(int, int)>();
+			for (var i = 0; i < result.Length; i += 2)
+			{
+				indexes.Add((result[i], result[i + 1]));
+			}
+
+			indexes.Should().BeEquivalentTo((2, 0), (0, 1), (1, 1), (0, 0));
+
+			var expected = new byte[6];
+			for (var i = 0; i < cnt * 2; i += 2)
+			{
+				var x = result[i];
+				var y = result[i + 1];
+				expected[y * w + x] = 1;
+			}
+
+			source.Should().Equal(expected);
+		}
+
 		[Test]
 		public async Task IndexOf_greaterThan()
 		{
