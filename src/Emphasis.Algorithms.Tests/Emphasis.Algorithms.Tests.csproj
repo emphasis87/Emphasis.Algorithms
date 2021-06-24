@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Emphasis.Algorithms.Formula.OpenCL\Emphasis.Algorithms.Formula.OpenCL.csproj" />
     <ProjectReference Include="..\Emphasis.Algorithms.IndexOf.OpenCL\Emphasis.Algorithms.IndexOf.OpenCL.csproj" />
     <ProjectReference Include="..\Emphasis.Algorithms.IndexOf\Emphasis.Algorithms.IndexOf.csproj" />
   </ItemGroup>

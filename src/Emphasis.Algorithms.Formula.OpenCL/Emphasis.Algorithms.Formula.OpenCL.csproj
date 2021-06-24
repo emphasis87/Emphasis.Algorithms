@@ -1,15 +1,15 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <RootNamespace>Emphasis.Algorithms.IndexOf.OpenCL</RootNamespace>
+    <RootNamespace>Emphasis.Algorithms.Formula.OpenCL</RootNamespace>
     <Product>Emphasis.Algorithms</Product>
     <Authors>Luboš Hemala</Authors>
-    <PackageId>Emphasis.Algorithms.IndexOf.OpenCL</PackageId>
-    <PackageTags>IndexOf;OpenCL</PackageTags>
+    <PackageId>Emphasis.Algorithms.Formula.OpenCL</PackageId>
+    <PackageTags>Formula;OpenCL</PackageTags>
     <Description>
 A library for common algorithms.
-IndexOf - Compares an array to an operand and collects (x, y) indexes where true.
+Formula - Executes a simple formula based on (x, y, w, h) parameters.
     </Description>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <IsPackageable>true</IsPackageable>
@@ -21,16 +21,16 @@ IndexOf - Compares an array to an operand and collects (x, y) indexes where true
 
   <ItemGroup>
     <Compile Update="Kernels.Designer.cs">
+      <DependentUpon>Kernels.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>Kernels.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Update="Kernels.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Kernels.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
   </ItemGroup>
 

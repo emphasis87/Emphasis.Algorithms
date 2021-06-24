@@ -6,7 +6,25 @@ using static Emphasis.OpenCL.OclHelper;
 
 namespace Emphasis.Algorithms.IndexOf.OpenCL
 {
-	public class OclIndexOfAlgorithms
+	public interface IOclIndexOfAlgorithms
+	{
+		Task<nint> IndexOfGreaterThan<T>(nint queueId, int width, int height, OclTypedBuffer sourceBuffer, OclTypedBuffer resultBuffer, OclTypedBuffer counterBuffer, T comparand)
+			where T : unmanaged;
+
+		Task<nint> IndexOfGreaterThanOrEquals<T>(nint queueId, int width, int height, OclTypedBuffer sourceBuffer, OclTypedBuffer resultBuffer, OclTypedBuffer counterBuffer, T comparand)
+			where T : unmanaged;
+
+		Task<nint> IndexOfLessThan<T>(nint queueId, int width, int height, OclTypedBuffer sourceBuffer, OclTypedBuffer resultBuffer, OclTypedBuffer counterBuffer, T comparand)
+			where T : unmanaged;
+
+		Task<nint> IndexOfLessThanOrEquals<T>(nint queueId, int width, int height, OclTypedBuffer sourceBuffer, OclTypedBuffer resultBuffer, OclTypedBuffer counterBuffer, T comparand)
+			where T : unmanaged;
+
+		Task<nint> IndexOfEquals<T>(nint queueId, int width, int height, OclTypedBuffer sourceBuffer, OclTypedBuffer resultBuffer, OclTypedBuffer counterBuffer, T comparand)
+			where T : unmanaged;
+	}
+
+	public class OclIndexOfAlgorithms : IOclIndexOfAlgorithms
 	{
 		private readonly ConcurrentDictionary<(nint deviceId, string counterType), bool> _isSupported = new();
 		private readonly ConcurrentDictionary<nint, (nint contextId, nint deviceId, nint programId, string counterType, uint workGroupSize)> _indexOf = new();

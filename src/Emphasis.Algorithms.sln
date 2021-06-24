@@ -13,11 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emphasis.Algorithms.Tests.B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emphasis.Algorithms.IndexOf.OpenCL", "Emphasis.Algorithms.IndexOf.OpenCL\Emphasis.Algorithms.IndexOf.OpenCL.csproj", "{186DEC16-5FDC-418C-B9BA-D0887563825E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emphasis.Algorithms.ConnectedComponentsAnalysis.OpenCL", "Emphasis.Algorithms.ConnectedComponentsAnalysis.OpenCL\Emphasis.Algorithms.ConnectedComponentsAnalysis.OpenCL.csproj", "{D6C7CADB-AD6F-4FF9-BEB5-FD3567B9555C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emphasis.Algorithms.ConnectedComponentsAnalysis.OpenCL", "Emphasis.Algorithms.ConnectedComponentsAnalysis.OpenCL\Emphasis.Algorithms.ConnectedComponentsAnalysis.OpenCL.csproj", "{D6C7CADB-AD6F-4FF9-BEB5-FD3567B9555C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emphasis.Algorithms.Resize.OpenCL", "Emphasis.Algorithms.Resize.OpenCL\Emphasis.Algorithms.Resize.OpenCL.csproj", "{F3B8598F-2CBC-4F62-88FF-D50BC68797D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emphasis.Algorithms.Resize.OpenCL", "Emphasis.Algorithms.Resize.OpenCL\Emphasis.Algorithms.Resize.OpenCL.csproj", "{F3B8598F-2CBC-4F62-88FF-D50BC68797D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emphasis.Algorithms.StrokeWidthTransform.OpenCL", "Emphasis.Algorithms.StrokeWidthTransform.OpenCL\Emphasis.Algorithms.StrokeWidthTransform.OpenCL.csproj", "{12A09D02-C537-46C6-8566-0FF2818641E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emphasis.Algorithms.StrokeWidthTransform.OpenCL", "Emphasis.Algorithms.StrokeWidthTransform.OpenCL\Emphasis.Algorithms.StrokeWidthTransform.OpenCL.csproj", "{12A09D02-C537-46C6-8566-0FF2818641E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emphasis.Algorithms.Formula.OpenCL", "Emphasis.Algorithms.Formula.OpenCL\Emphasis.Algorithms.Formula.OpenCL.csproj", "{3AD873F3-7AF8-436F-85CD-495115A858E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,10 @@ Global
 		{12A09D02-C537-46C6-8566-0FF2818641E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12A09D02-C537-46C6-8566-0FF2818641E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12A09D02-C537-46C6-8566-0FF2818641E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AD873F3-7AF8-436F-85CD-495115A858E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AD873F3-7AF8-436F-85CD-495115A858E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AD873F3-7AF8-436F-85CD-495115A858E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AD873F3-7AF8-436F-85CD-495115A858E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
