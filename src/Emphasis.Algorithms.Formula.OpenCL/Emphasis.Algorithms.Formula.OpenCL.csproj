@@ -9,7 +9,7 @@
     <PackageTags>Formula;OpenCL</PackageTags>
     <Description>
 A library for common algorithms.
-Formula - Executes a simple formula based on (x, y, w, h) parameters.
+Formula - Executes a simple formula based on (x, y, w, h, d = x + y * w) parameters.
     </Description>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <IsPackageable>true</IsPackageable>
