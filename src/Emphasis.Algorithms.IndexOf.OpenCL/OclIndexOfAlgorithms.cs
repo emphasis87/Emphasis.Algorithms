@@ -27,7 +27,7 @@ namespace Emphasis.Algorithms.IndexOf.OpenCL
 	public class OclIndexOfAlgorithms : IOclIndexOfAlgorithms
 	{
 		private readonly ConcurrentDictionary<(nint deviceId, string counterType), bool> _isSupported = new();
-		private readonly ConcurrentDictionary<nint, (nint contextId, nint deviceId, nint programId, string counterType, uint workGroupSize)> _indexOf = new();
+		private readonly ConcurrentDictionary<(nint queueId, string args), (nint contextId, nint deviceId, nint programId, string counterType, uint workGroupSize)> _programs = new();
 
 		public bool IsSupported(nint deviceId, OclTypedBuffer counterBuffer)
 		{
@@ -63,23 +63,23 @@ namespace Emphasis.Algorithms.IndexOf.OpenCL
 			string operation)
 			where T : unmanaged
 		{
+			var args = $"-D Operation={operation} -D TCounter={counterBuffer.NativeType} -D TSource={sourceBuffer.NativeType} -D TResult={resultBuffer.NativeType}";
 			nint kernelId;
-			if (!_indexOf.TryGetValue(queueId, out var indexOf))
+			if (!_programs.TryGetValue((queueId, args), out var program))
 			{
 				var contextId = GetCommandQueueContext(queueId);
 				var deviceId = GetCommandQueueDevice(queueId);
-				var programId = await OclProgramRepository.Shared.GetProgram(contextId, deviceId, Kernels.IndexOf,
-					$"-D Operation={operation} -D TCounter={counterBuffer.NativeType} -D TSource={sourceBuffer.NativeType} -D TResult={resultBuffer.NativeType}");
+				var programId = await OclProgramRepository.Shared.GetProgram(contextId, deviceId, Kernels.IndexOf, args);
 
 				kernelId = CreateKernel(programId, "IndexOf");
 				var workGroupSize = GetKernelWorkGroupSize(kernelId, deviceId);
 
-				indexOf = (contextId, deviceId, programId, counterBuffer.NativeType, workGroupSize);
-				_indexOf[queueId] = indexOf;
+				program = (contextId, deviceId, programId, counterBuffer.NativeType, workGroupSize);
+				_programs[(queueId, args)] = program;
 			}
 			else
 			{
-				kernelId = CreateKernel(indexOf.programId, "IndexOf");
+				kernelId = CreateKernel(program.programId, "IndexOf");
 			}
 			
 			SetKernelArg(kernelId, 0, sourceBuffer.NativeId);

@@ -19,7 +19,7 @@ namespace Emphasis.Algorithms.Formula.OpenCL
 
 	public class OclFormulaAlgorithms : IOclFormulaAlgorithms
 	{
-		private readonly ConcurrentDictionary<nint, (nint contextId, nint deviceId, nint programId)> _programs = new();
+		private readonly ConcurrentDictionary<(nint queueId, string args), (nint contextId, nint deviceId, nint programId)> _programs = new();
 
 		public async Task<nint> Formula(
 			nint queueId,
@@ -28,23 +28,20 @@ namespace Emphasis.Algorithms.Formula.OpenCL
 			OclTypedBuffer sourceBuffer,
 			string formula = null)
 		{
+			formula = formula?.Trim() ?? "d";
+			var args = $" -D TSource={sourceBuffer.NativeType}  -D Expression={formula}";
 			nint kernelId;
-			if (!_programs.TryGetValue(queueId, out var program))
+			if (!_programs.TryGetValue((queueId, args), out var program))
 			{
 				var contextId = GetCommandQueueContext(queueId);
 				var deviceId = GetCommandQueueDevice(queueId);
 				
-				var args = new StringBuilder();
-				args.Append($" -D TSource={sourceBuffer.NativeType}");
-				if (!string.IsNullOrWhiteSpace(formula))
-					args.Append($" -D Expression={formula}");
-
-				var programId = await OclProgramRepository.Shared.GetProgram(contextId, deviceId, Kernels.Formula, args.ToString());
+				var programId = await OclProgramRepository.Shared.GetProgram(contextId, deviceId, Kernels.Formula, args);
 				
 				kernelId = CreateKernel(programId, "Formula");
 
 				program = (contextId, deviceId, programId);
-				_programs[queueId] = program;
+				_programs[(queueId, formula)] = program;
 			}
 			else
 			{
