@@ -4,4 +4,27 @@
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Emphasis.OpenCL" Version="1.0.21" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Emphasis.Algorithms.Formula.OpenCL\Emphasis.Algorithms.Formula.OpenCL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Kernels.Designer.cs">
+      <DependentUpon>Kernels.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Kernels.resx">
+      <LastGenOutput>Kernels.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

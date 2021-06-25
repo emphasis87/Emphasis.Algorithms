@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emphasis.Algorithms.Resize.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emphasis.Algorithms.StrokeWidthTransform.OpenCL", "Emphasis.Algorithms.StrokeWidthTransform.OpenCL\Emphasis.Algorithms.StrokeWidthTransform.OpenCL.csproj", "{12A09D02-C537-46C6-8566-0FF2818641E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emphasis.Algorithms.Formula.OpenCL", "Emphasis.Algorithms.Formula.OpenCL\Emphasis.Algorithms.Formula.OpenCL.csproj", "{3AD873F3-7AF8-436F-85CD-495115A858E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emphasis.Algorithms.Formula.OpenCL", "Emphasis.Algorithms.Formula.OpenCL\Emphasis.Algorithms.Formula.OpenCL.csproj", "{3AD873F3-7AF8-436F-85CD-495115A858E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

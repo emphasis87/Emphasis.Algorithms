@@ -41,7 +41,7 @@ namespace Emphasis.Algorithms.Formula.OpenCL
 				kernelId = CreateKernel(programId, "Formula");
 
 				program = (contextId, deviceId, programId);
-				_programs[(queueId, formula)] = program;
+				_programs[(queueId, args)] = program;
 			}
 			else
 			{
