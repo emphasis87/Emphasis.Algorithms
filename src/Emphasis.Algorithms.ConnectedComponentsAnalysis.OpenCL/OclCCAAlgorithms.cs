@@ -112,7 +112,6 @@ namespace Emphasis.Algorithms.ConnectedComponentsAnalysis.OpenCL
 						waitOnEvents: stackalloc nint[] {lastEventId});
 
 					WaitForEvents(lastEventId);
-
 					
 					if (hasChanged[0] != 1)
 						return lastEventId;
