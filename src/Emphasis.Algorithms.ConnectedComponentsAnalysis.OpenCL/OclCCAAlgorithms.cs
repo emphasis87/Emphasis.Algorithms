@@ -46,8 +46,11 @@ namespace Emphasis.Algorithms.ConnectedComponentsAnalysis.OpenCL
 				kernelId = CreateKernel(program.programId, "Labeling4");
 			}
 
+			var hasChangedBuffer = OclMemoryPool.Shared.RentBuffer<int>(program.contextId, 1);
+
 			SetKernelArg(kernelId, 0, sourceBuffer.NativeId);
 			SetKernelArg(kernelId, 1, labelsBuffer.NativeId);
+			SetKernelArg(kernelId, 2, hasChangedBuffer);
 
 			var eventId = EnqueueNDRangeKernel(queueId, kernelId,
 				globalWorkSize: stackalloc nuint[] {(nuint) width, (nuint) height},
@@ -56,6 +59,8 @@ namespace Emphasis.Algorithms.ConnectedComponentsAnalysis.OpenCL
 			OnEventCompleted(eventId, () =>
 			{
 				ReleaseKernel(kernelId);
+
+				OclMemoryPool.Shared.ReturnBuffer(hasChangedBuffer);
 			});
 
 			return eventId;

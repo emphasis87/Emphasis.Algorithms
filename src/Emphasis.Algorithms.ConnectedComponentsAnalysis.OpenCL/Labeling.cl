@@ -10,12 +10,13 @@
 #define Expression a == b
 #endif
 
-global static int2[] N4 = { (0,-1), (-1,0), (1,0), (0,1) };
-global static int2[] N8 = { (-1,-1), (0,-1), (1,-1), (-1,0), (1,0), (-1,1), (0,1), (1,1) };
+int2 constant N4[4] = { (0,-1), (-1,0), (1,0), (0,1) };
+int2 constant N8[8] = { (-1,-1), (0,-1), (1,-1), (-1,0), (1,0), (-1,1), (0,1), (1,1) };
 
 void kernel Labeling4(
     global TSource* source,
-    global TResult* result
+    global TResult* result,
+    global int* hasChanged
 ){
     int x = get_global_id(0);
     int y = get_global_id(1);
@@ -43,33 +44,22 @@ void kernel Labeling4(
                     c = result[c];
                     c = result[c];
                     c = result[c];
-                    result[d] = c;
+                    if (r0 != c)
+                    {
+                        result[d] = c;
+                        if (hasChanged[0] != 1)
+                            hasChanged[0] = 1;
+                    }
                 }
             }
         }
     }
-
-    source[d] = Expression;
 }
 
 void kernel Labeling8(
     global TSource* source,
-    global TResult* source
+    global TResult* result,
+    global int* hasChanged
 ){
-    int x = get_global_id(0);
-    int y = get_global_id(1);
-    int w = get_global_size(0);
-    int h = get_global_size(1);
-    int d = x + y * w;
-
-    int d00 = (x-1) + (y-1) * w;
-    int d01 = x + (y-1) * w;
-    int d02 = (x+1) + (y-1) * w;
-    int d10 = (x-1) + y * w;
-    int d12 = (x+1) + y * w;
-    int d20 = (x-1) + (y+1) * w;
-    int d21 = x + (y+1) * w;
-    int d22 = (x+1) + (y+1) * w;
-
-    source[d] = Expression;
+    
 }
