@@ -28,8 +28,8 @@ namespace Emphasis.Algorithms.Formula.OpenCL
 			OclTypedBuffer sourceBuffer,
 			string formula = null)
 		{
-			formula = formula?.Trim() ?? "d";
-			var args = $" -D TSource={sourceBuffer.NativeType}  -D Expression={formula}";
+			formula ??= "d";
+			var args = $" -D TSource={sourceBuffer.NativeType} -D Expression={formula}";
 			nint kernelId;
 			if (!_programs.TryGetValue((queueId, args), out var program))
 			{

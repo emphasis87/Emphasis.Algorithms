@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Emphasis.Algorithms.ConnectedComponentsAnalysis.OpenCL;
-using Emphasis.Algorithms.Formula.OpenCL;
 using Emphasis.OpenCL;
 using FluentAssertions;
 using NUnit.Framework;

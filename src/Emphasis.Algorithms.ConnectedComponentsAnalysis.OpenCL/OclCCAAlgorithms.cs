@@ -67,10 +67,8 @@ namespace Emphasis.Algorithms.ConnectedComponentsAnalysis.OpenCL
 		{
 			// Mark labels in ascending order
 			var markEventId = await _formulaAlgorithms.Formula(queueId, width, height, labelsBuffer);
-
-			expression ??= "\"(a == b && a > 0)\"";
-			if (!expression.StartsWith("\""))
-				expression = $"\"({expression})\"";
+			
+			expression ??= "(a==b)&&(a>0)";
 			var args =
 				$"-D TSource={sourceBuffer.NativeType} -D TResult={sourceBuffer.NativeType} -D Expression={expression}";
 			nint kernelId;

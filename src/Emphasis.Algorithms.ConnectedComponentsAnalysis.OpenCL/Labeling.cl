@@ -7,7 +7,7 @@
 #endif
 
 #ifndef Expression
-#define Expression a == b
+#define Expression (a==b)&&(a>0)
 #endif
 
 int2 constant N4[4] = { (int2)(0,-1), (int2)(-1,0), (int2)(1,0), (int2)(0,1) };
