@@ -3,7 +3,12 @@ using System.Threading.Tasks;
 
 namespace Emphasis.Algorithms.Resize.OpenCL
 {
-	public class OclResizeAlgorithms
+	public interface IOclResizeAlgorithms
+	{
+
+	}
+
+	public class OclResizeAlgorithms : IOclResizeAlgorithms
 	{
 		
 	}

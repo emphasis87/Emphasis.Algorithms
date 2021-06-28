@@ -2,7 +2,12 @@
 
 namespace Emphasis.Algorithms.StrokeWidthTransform.OpenCL
 {
-	public class OclSWTAlgorithms
+	public interface IOclSWTAlgorithms
+	{
+
+	}
+
+	public class OclSWTAlgorithms : IOclSWTAlgorithms
 	{
 
 	}
