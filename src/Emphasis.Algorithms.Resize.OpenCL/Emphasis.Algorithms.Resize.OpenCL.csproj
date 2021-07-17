@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Emphasis.OpenCL" Version="1.0.21" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Kernels.Designer.cs">
       <DependentUpon>Kernels.resx</DependentUpon>
       <DesignTime>True</DesignTime>
