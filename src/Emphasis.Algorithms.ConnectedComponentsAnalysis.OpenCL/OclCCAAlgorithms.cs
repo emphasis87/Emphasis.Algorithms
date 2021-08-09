@@ -29,10 +29,7 @@ namespace Emphasis.Algorithms.ConnectedComponentsAnalysis.OpenCL
 	public class OclCCAAlgorithms : IOclCCAAlgorithms
 	{
 		private readonly OclFormulaAlgorithms _formulaAlgorithms = new();
-
-		private readonly
-			ConcurrentDictionary<(nint queueId, string args), (nint contextId, nint deviceId, nint programId)>
-			_programs = new();
+		private readonly ConcurrentDictionary<(nint queueId, string args), (nint contextId, nint deviceId, nint programId)> _ccaPrograms = new();
 
 		public Task<nint> Labeling4(
 			nint queueId,
@@ -69,21 +66,20 @@ namespace Emphasis.Algorithms.ConnectedComponentsAnalysis.OpenCL
 			var markEventId = await _formulaAlgorithms.Formula(queueId, width, height, labelsBuffer);
 			
 			expression ??= "(a==b)&&(a>0)";
-			var args =
-				$"-D TSource={sourceBuffer.NativeType} -D TResult={sourceBuffer.NativeType} -D Expression={expression}";
+			var args = $"-D TSource={sourceBuffer.NativeType} -D TResult={sourceBuffer.NativeType} -D Expression={expression}";
+
 			nint kernelId;
-			if (!_programs.TryGetValue((queueId, args), out var program))
+			if (!_ccaPrograms.TryGetValue((queueId, args), out var program))
 			{
 				var contextId = GetCommandQueueContext(queueId);
 				var deviceId = GetCommandQueueDevice(queueId);
 
-				var programId =
-					await OclProgramRepository.Shared.GetProgram(contextId, deviceId, Kernels.Labeling, args);
+				var programId = await OclProgramRepository.Shared.GetProgram(contextId, deviceId, Kernels.Labeling, args);
 
 				kernelId = CreateKernel(programId, kernelName);
 
 				program = (contextId, deviceId, programId);
-				_programs[(queueId, args)] = program;
+				_ccaPrograms[(queueId, args)] = program;
 			}
 			else
 			{

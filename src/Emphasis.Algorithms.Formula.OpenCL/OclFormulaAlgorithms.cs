@@ -30,6 +30,8 @@ namespace Emphasis.Algorithms.Formula.OpenCL
 		{
 			formula ??= "d";
 			var args = $" -D TSource={sourceBuffer.NativeType} -D Expression={formula}";
+			const string kernelName = "Formula";
+
 			nint kernelId;
 			if (!_programs.TryGetValue((queueId, args), out var program))
 			{
@@ -38,14 +40,14 @@ namespace Emphasis.Algorithms.Formula.OpenCL
 				
 				var programId = await OclProgramRepository.Shared.GetProgram(contextId, deviceId, Kernels.Formula, args);
 				
-				kernelId = CreateKernel(programId, "Formula");
+				kernelId = CreateKernel(programId, kernelName);
 
 				program = (contextId, deviceId, programId);
 				_programs[(queueId, args)] = program;
 			}
 			else
 			{
-				kernelId = CreateKernel(program.programId, "Formula");
+				kernelId = CreateKernel(program.programId, kernelName);
 			}
 
 			SetKernelArg(kernelId, 0, sourceBuffer.NativeId);

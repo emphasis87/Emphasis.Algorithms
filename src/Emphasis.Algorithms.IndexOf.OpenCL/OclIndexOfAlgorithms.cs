@@ -64,6 +64,8 @@ namespace Emphasis.Algorithms.IndexOf.OpenCL
 			where T : unmanaged
 		{
 			var args = $"-D Operation={operation} -D TCounter={counterBuffer.NativeType} -D TSource={sourceBuffer.NativeType} -D TResult={resultBuffer.NativeType}";
+			const string kernelName = "IndexOf";
+
 			nint kernelId;
 			if (!_programs.TryGetValue((queueId, args), out var program))
 			{
@@ -71,7 +73,7 @@ namespace Emphasis.Algorithms.IndexOf.OpenCL
 				var deviceId = GetCommandQueueDevice(queueId);
 				var programId = await OclProgramRepository.Shared.GetProgram(contextId, deviceId, Kernels.IndexOf, args);
 
-				kernelId = CreateKernel(programId, "IndexOf");
+				kernelId = CreateKernel(programId, kernelName);
 				var workGroupSize = GetKernelWorkGroupSize(kernelId, deviceId);
 
 				program = (contextId, deviceId, programId, counterBuffer.NativeType, workGroupSize);
@@ -79,18 +81,16 @@ namespace Emphasis.Algorithms.IndexOf.OpenCL
 			}
 			else
 			{
-				kernelId = CreateKernel(program.programId, "IndexOf");
+				kernelId = CreateKernel(program.programId, kernelName);
 			}
 			
 			SetKernelArg(kernelId, 0, sourceBuffer.NativeId);
 			SetKernelArg(kernelId, 1, resultBuffer.NativeId);
 			SetKernelArg(kernelId, 2, counterBuffer.NativeId);
-			//SetKernelArgSize<int>(kernelId, 3, (int)(indexOf.workGroupSize * 2));
 			SetKernelArg(kernelId, 3, comparand);
 
 			var eventId = EnqueueNDRangeKernel(queueId, kernelId,
 				globalWorkSize: stackalloc nuint[] {(nuint) width, (nuint) height});
-				//localWorkSize: stackalloc nuint[] { indexOf.workGroupSize, 1 });
 
 			OnEventCompleted(eventId, () =>
 			{
