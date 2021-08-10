@@ -20,6 +20,8 @@
     <ProjectReference Include="..\Emphasis.Algorithms.ConnectedComponentsAnalysis.OpenCL\Emphasis.Algorithms.ConnectedComponentsAnalysis.OpenCL.csproj" />
     <ProjectReference Include="..\Emphasis.Algorithms.IndexOf.OpenCL\Emphasis.Algorithms.IndexOf.OpenCL.csproj" />
     <ProjectReference Include="..\Emphasis.Algorithms.IndexOf\Emphasis.Algorithms.IndexOf.csproj" />
+    <ProjectReference Include="..\Emphasis.Algorithms.Resize.OpenCL\Emphasis.Algorithms.Resize.OpenCL.csproj" />
+    <ProjectReference Include="..\Emphasis.Algorithms.Tests\Emphasis.Algorithms.Tests.csproj" />
   </ItemGroup>
 
 </Project>

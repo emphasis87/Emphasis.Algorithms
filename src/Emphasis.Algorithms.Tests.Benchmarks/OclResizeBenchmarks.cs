@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
-using Emphasis.Algorithms.IndexOf.OpenCL;
+using Emphasis.Algorithms.Resize.OpenCL;
 using Emphasis.OpenCL;
 using static Emphasis.OpenCL.OclHelper;
 
 namespace Emphasis.Algorithms.Tests.Benchmarks
 {
 	[MarkdownExporter]
-	[SimpleJob(invocationCount: 2000)]
+	[SimpleJob(invocationCount: 1000)]
 	[Orderer(SummaryOrderPolicy.Method, MethodOrderPolicy.Alphabetical)]
-	public class OclIndexOfBenchmarks
+	public class OclResizeBenchmarks
 	{
 		private nint _platformId;
 		private nint _deviceId;
@@ -21,16 +20,14 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 		private nint _queueId;
 		private nint _sourceBufferId;
 		private nint _resultBufferId;
-		private nint _counterBufferId;
-
-		private int[] _source;
-		private int[] _indexes;
 
 		private int _width;
 		private int _height;
 		private int _size;
 
-		private OclIndexOfAlgorithms _indexOf;
+		private byte[] _source;
+
+		private readonly OclResizeAlgorithms _resize = new();
 
 		[GlobalSetup]
 		public void Setup()
@@ -41,23 +38,16 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 
 			_platformId = GetPlatforms().First();
 			_deviceId = GetPlatformDevices(_platformId).First();
-			_contextId = CreateContext(_platformId, new[] {_deviceId});
+			_contextId = CreateContext(_platformId, new[] { _deviceId });
 			_queueId = CreateCommandQueue(_contextId, _deviceId);
 
 			_sourceBufferId = OclMemoryPool.Shared.RentBuffer<int>(_contextId, _size);
-			_resultBufferId = OclMemoryPool.Shared.RentBuffer<int>(_contextId, _size * 2);
-			_counterBufferId = OclMemoryPool.Shared.RentBuffer<int>(_contextId, 1);
+			_resultBufferId = OclMemoryPool.Shared.RentBuffer<int>(_contextId, _size * 4);
 
-			_source = new int[_size];
-			_indexes = new int[_source.Length * 2];
+			_source = new byte[_size];
 
 			var random = new Random(1);
-			for (var x = 0; x < _source.Length; x++)
-			{
-				_source[x] = random.Next(0, 99);
-			}
-			
-			_indexOf = new OclIndexOfAlgorithms();
+			random.NextBytes(_source);
 		}
 
 		[GlobalCleanup]
@@ -65,23 +55,17 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 		{
 			OclMemoryPool.Shared.ReturnBuffer(_sourceBufferId);
 			OclMemoryPool.Shared.ReturnBuffer(_resultBufferId);
-			OclMemoryPool.Shared.ReturnBuffer(_counterBufferId);
 
 			ReleaseCommandQueue(_queueId);
 			ReleaseContext(_contextId);
 		}
 
-		[ParamsSource(nameof(SaturationSource))]
-		public int Saturation { get; set; } = 10;
-
-		public IEnumerable<int> SaturationSource => Enumerable.Range(1, 5).Select(x => x * 10);
-
 		[Benchmark]
-		public async Task IndexOfGreaterThan()
+		public async Task Bilinear_Gray_2x()
 		{
-			var comparand = 99 - Saturation;
-			var eventId = await _indexOf.IndexOfGreaterThan(_queueId, _width, _height, 
-				new OclBuffer<int>(_sourceBufferId), new OclBuffer<int>(_resultBufferId), new OclBuffer<int>(_counterBufferId), comparand);
+			var eventId = await _resize.BilinearGray(_queueId, _width, _height, _width * 2, _height * 2,
+				new OclBuffer<int>(_sourceBufferId), new OclBuffer<int>(_resultBufferId));
+
 			Flush(_queueId);
 			WaitForEvents(eventId);
 			ReleaseEvent(eventId);
