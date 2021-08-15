@@ -73,7 +73,7 @@ namespace Emphasis.Algorithms.Tests
 				indexes.Add((result[i], result[i + 1]));
 			}
 
-			indexes.Should().BeEquivalentTo((2, 0), (0, 1), (1, 1), (0, 0));
+			indexes.Should().BeEquivalentTo(new []{(2, 0), (0, 1), (1, 1), (0, 0)});
 
 			var expected = new int[6];
 			for (var i = 0; i < cnt * 2; i += 2)
@@ -128,7 +128,7 @@ namespace Emphasis.Algorithms.Tests
 				indexes.Add((result[i], result[i + 1]));
 			}
 
-			indexes.Should().BeEquivalentTo((2, 0), (0, 1), (1, 1), (0, 0));
+			indexes.Should().BeEquivalentTo(new []{(2, 0), (0, 1), (1, 1), (0, 0)});
 
 			var expected = new byte[6];
 			for (var i = 0; i < cnt * 2; i += 2)

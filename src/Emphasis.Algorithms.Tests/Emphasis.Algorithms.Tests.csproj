@@ -7,10 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Emgu.CV.Bitmap" Version="4.5.1.4349" />
-    <PackageReference Include="Emgu.CV.runtime.windows" Version="4.5.1.4349" />
-    <PackageReference Include="FluentAssertions" Version="5.10.3" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
+    <PackageReference Include="Emgu.CV.Bitmap" Version="4.5.3.4721" />
+    <PackageReference Include="Emgu.CV.runtime.windows" Version="4.5.3.4721" />
+    <PackageReference Include="FluentAssertions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
     <PackageReference Include="NUnit" Version="3.13.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
     <PackageReference Include="SharpDX" Version="4.2.0" />
