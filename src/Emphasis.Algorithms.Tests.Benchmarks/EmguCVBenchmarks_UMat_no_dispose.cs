@@ -9,6 +9,10 @@ using Emphasis.Algorithms.Tests.samples;
 
 namespace Emphasis.Algorithms.Tests.Benchmarks
 {
+	/// <summary>
+	/// Disposes of allocated memory only after each iteration (with custom number of invocations).
+	/// This requires large enough GPU memory.
+	/// </summary>
 	[MarkdownExporter]
 	[SimpleJob]
 	public class EmguCvBenchmarks_UMat_no_dispose
@@ -70,7 +74,7 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 		private readonly List<UMat> _dxList = new();
 		private readonly List<UMat> _dyList = new();
 		private readonly List<UMat> _cannyList = new();
-		
+
 		[IterationCleanup]
 		public void IterationCleanup()
 		{
@@ -82,9 +86,12 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 			_dxList.Clear();
 			_dyList.ForEach(x => x.Dispose());
 			_dyList.Clear();
+			_cannyList.ForEach(x => x.Dispose());
+			_cannyList.Clear();
 		}
 
 		[Benchmark]
+		[InvocationCount(512, 16)]
 		public void Grayscale()
 		{
 			var gray = new UMat();
@@ -93,6 +100,7 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 		}
 
 		[Benchmark]
+		[InvocationCount(256, 16)]
 		public void Resize()
 		{
 			var resized = new UMat();
@@ -101,6 +109,7 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 		}
 
 		[Benchmark]
+		[InvocationCount(64, 16)]
 		public void Sobel()
 		{
 			var dx = new UMat();
@@ -112,6 +121,7 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 		}
 
 		[Benchmark]
+		[InvocationCount(16, 16)]
 		public void Canny()
 		{
 			var canny = new UMat();
@@ -120,6 +130,7 @@ namespace Emphasis.Algorithms.Tests.Benchmarks
 		}
 
 		[Benchmark]
+		[InvocationCount(4, 4)]
 		public void MSER()
 		{
 			using var msers = new VectorOfVectorOfPoint();
